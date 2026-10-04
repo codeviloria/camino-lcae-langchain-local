@@ -48,7 +48,8 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M1.5 Memory | ✅ | [nota](docs/module-1/M1.5-memory.md) |
 | | M1.6 Multimodal (imagen + audio) | ✅ | [nota](docs/module-1/M1.6-multimodal.md) |
 | | M1.7 Personal Chef (proyecto + LangGraph Studio) | ✅ | [nota](docs/module-1/M1.7-personal-chef.md) |
-| | Módulo 2: MCP, context/state, multi-agente, RAG, SQL | ⏳ | |
+| | M2.1 MCP (servidor propio + servidor de terceros) | ✅ | [nota](docs/module-2/M2.1-mcp.md) |
+| | Módulo 2: travel agent, context/state, multi-agente, RAG, SQL | ⏳ | |
 | | Módulo 3: production-ready agent | ⬜ | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |

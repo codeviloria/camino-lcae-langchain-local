@@ -208,3 +208,13 @@ __marimo__/
 
 # LangSmith Studio
 **/.langgraph_api/
+
+# --- fork local ---
+.DS_Store
+**/.DS_Store
+*.bak
+uv.lock.bak
+*.wav
+
+# respaldo local de los notebooks sin sanitizar (NUNCA publicar)
+_privado/

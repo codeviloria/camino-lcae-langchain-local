@@ -1,302 +1,141 @@
-# 🔗 Introduction to LangChain - Python
+# LangChain Academy en local: el camino a la certificación LCAE con Ollama
 
-## Introduction
+> **EN:** Fork of LangChain Academy's *Introduction to LangChain (Python)* adapted to run **100 % locally on CPU with Ollama** (no paid LLM APIs). Each lesson is documented with what broke, why, and how it was fixed — practical evidence of my path to the **LangChain Certified Agent Engineer (LCAE)** certification.
 
-Welcome to LangChain Academy's **Introduction to LangChain** course!
+Este repositorio es un fork del curso oficial [`langchain-ai/lca-lc-foundations`](https://github.com/langchain-ai/lca-lc-foundations) (licencia MIT). Lo adapté para correr **todos los notebooks con modelos locales en Ollama, sin GPU y sin APIs de pago**. Cada lección queda documentada como evidencia práctica: qué se rompió, por qué y cómo lo resolví.
 
-This repository is the companion to the course located [HERE](https://academy.langchain.com/courses/foundation-introduction-to-langchain-python).
+**Autor:** Gino. Ingeniero de telecomunicaciones (optimización RAN/RF) en transición a ingeniería de IA y agentes.
+<!-- LinkedIn: agrega aquí tu URL -->
 
 ---
 
-## 🚀 Setup
+## 🎯 Objetivo
 
-### Prerequisites
+Prepararme para la **LangChain Certified Agent Engineer (LCAE)**, cuyo examen evalúa 4 dominios (Build, Test, Deploy, Monitor), aprendiendo con restricciones reales:
 
-- The [Chrome](https://www.google.com/chrome/) browser is recommended
-- [git](https://git-scm.com/install/) is recommended
-- A package/project manager: [uv](https://docs.astral.sh/uv/) (recommended) or [pip](https://pypi.org/project/pip/)
-- note: `uv` is also required in Module 2, Lesson 1 to run the MCP server with `uvx`
-- The course requires Python >=3.12, <3.14  If you use `uv`, it will take care of this for you. [More info](#python-virtual-environments)
+- **Sin APIs de pago.** Los modelos corren en un servidor propio con Ollama.
+- **Sin GPU.** Todo en CPU, así que la latencia y los tokens importan y se miden.
+- **Documentación de cada problema** con el formato *problema → causa → solución → regla*.
 
-### Installation
+Ver la [guía del examen](docs/examen-lcae.md).
 
-Download the course repository
-```bash
-# Clone the repo
-git clone --depth 1 https://github.com/langchain-ai/lca-lc-foundations.git
-cd lca-lc-foundations
+## 🖥️ Arquitectura del lab
+
+```mermaid
+flowchart LR
+    A["Workstation Ubuntu<br/>JupyterLab · uv · langgraph dev"] -- "HTTP :11434" --> B["Servidor Windows<br/>Ollama · CPU i7-9700 · 32 GB · sin GPU"]
+    A -- "tracing" --> C["LangSmith<br/>(plan gratis)"]
+    A -- "búsqueda web" --> D["Tavily API<br/>(plan gratis)"]
 ```
 
-Make a copy of example.env
+| Pieza | Uso |
+|---|---|
+| [`local_model.py`](local_model.py) | `get_model()` reemplaza a `init_chat_model("gpt-5-nano")` en todos los notebooks |
+| Ollama | `gemma4:latest` (texto, tools, visión y audio), `qwen3:8b`, `qwen3:4b`, `gemma3:4b` |
+| LangSmith | Tracing de cada ejecución (dominio Monitor) |
+| Tavily | Tool de búsqueda web |
+
+Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
+
+## 📈 Progreso
+
+| Curso / Módulo | Lección | Estado | Notas |
+|---|---|---|---|
+| **01 · Introduction to LangChain** | M1.1 Foundational Models | ✅ | [nota](docs/module-1/M1.1-foundational-models.md) |
+| | M1.2 Prompting | ✅ | [nota](docs/module-1/M1.2-prompting.md) |
+| | M1.3 Tools | ✅ | [nota](docs/module-1/M1.3-tools.md) |
+| | M1.4 Web Search | ✅ | [nota](docs/module-1/M1.4-web-search.md) |
+| | M1.5 Memory | ✅ | [nota](docs/module-1/M1.5-memory.md) |
+| | M1.6 Multimodal (imagen + audio) | ✅ | [nota](docs/module-1/M1.6-multimodal.md) |
+| | M1.7 Personal Chef (proyecto + LangGraph Studio) | ✅ | [nota](docs/module-1/M1.7-personal-chef.md) |
+| | Módulo 2: MCP, context/state, multi-agente, RAG, SQL | ⏳ | |
+| | Módulo 3: production-ready agent | ⬜ | |
+| 02 · Introduction to Deep Agents | | ⬜ | |
+| 03 · Building Reliable Agents (Test) | | ⬜ | |
+| 04 · Monitoring Production Agents | | ⬜ | |
+| 05 · LangSmith Deployment | | ⬜ | |
+| 06 · LCAE Practice Exam → **Examen** | | ⬜ | |
+
+El registro cronológico está en la [bitácora](docs/bitacora.md).
+
+## 🔬 Hallazgos medidos en el lab (CPU, sin GPU)
+
+| Hallazgo | Dato real | Lección |
+|---|---|---|
+| El *thinking* de qwen3 en CPU es carísimo | ~5,7 tokens/s → hay que usar `reasoning=False` | [M1.1](docs/module-1/M1.1-foundational-models.md) |
+| La salida de las tools es latencia | 5 resultados de Tavily ≈ 2.000 tokens ≈ 60 s solo leyendo | [M1.4](docs/module-1/M1.4-web-search.md) |
+| Sin tool, el modelo inventa con seguridad | Dijo un presidente de Colombia equivocado; con búsqueda acertó | [M1.4](docs/module-1/M1.4-web-search.md) |
+| La memoria reenvía el historial | Tokens de entrada 22 → 91 en el segundo turno | [M1.5](docs/module-1/M1.5-memory.md) |
+| Capacidad del modelo ≠ soporte de la integración | gemma4 oye audio, pero `langchain-ollama` rechaza bloques `audio`. Lo resolví con audio a 16 kHz | [M1.6](docs/module-1/M1.6-multimodal.md) |
+| Un modelo multimodal alucina con entrada vacía | Con el micrófono mudo "transcribió" frases que nadie dijo | [M1.6](docs/module-1/M1.6-multimodal.md) |
+| gemma4 es el más rápido del lab para agentes | ~10,8 tok/s generando frente a ~5,7 de qwen3:8b | [M1.7](docs/module-1/M1.7-personal-chef.md) |
+| El prompt es la palanca más barata de latencia | Limitar la salida y `max_results=3`: 107,9 s → 31,8 s y 863 → 220 tokens, y además cita fuentes | [M1.7](docs/module-1/M1.7-personal-chef.md) |
+
+**Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
+
+![Personal Chef en LangGraph Studio](docs/img/M1.7-studio-personal-chef.png)
+
+Todas las reglas consolidadas: [docs/lecciones-aprendidas.md](docs/lecciones-aprendidas.md) · Observabilidad: [docs/langsmith-tracing-monitor.md](docs/langsmith-tracing-monitor.md)
+
+## 🔧 Qué cambia respecto al curso original
+
+| Original | En este fork |
+|---|---|
+| `init_chat_model("gpt-5-nano")` / `create_agent("gpt-5-nano")` | `create_agent(model=get_model())` → Ollama |
+| Claude / Gemini en M1.1 | `qwen3:4b`, `gemma3:4b` |
+| `gpt-audio` (M1.6) | `gemma4:latest` + audio 16 kHz mono |
+| Keys de OpenAI, Anthropic y Google | No se necesitan |
+| `InMemorySaver` en el grafo de `langgraph dev` | Eliminado: el servidor maneja la persistencia |
+
+Las celdas originales quedan comentadas junto a las adaptadas (`## Esto no lo corrí, lo adapté a Ollama local`).
+
+## 🚀 Cómo correrlo
+
+**Requisitos:** Python 3.12+, [uv](https://docs.astral.sh/uv/) y [Ollama](https://ollama.com) (en la misma máquina o en otra de la red).
+
 ```bash
-# Create .env file
-cp example.env .env
-```
-
-Edit the .env file to include the keys below for [Models](#model-providers) and optionally [LangSmith](#getting-started-with-langsmith)
-
-- Get an OpenAI API Key [here](https://openai.com/index/openai-api/).  
-- Optional for Module1/Lesson1, get an Anthropic API Key [here](https://console.anthropic.com) and a Google API Key [here](https://ai.google.dev/gemini-api/docs/quickstart).
-- Optional, Create a [LangSmith](https://smith.langchain.com/) account and API Key.  
-
-```bash
-# Manual installs for checking: uv
-
-# Required
-OPENAI_API_KEY='your_openai_api_key_here'
-TAVILY_API_KEY='your_tavily_api_key_here'
-
-# optional, only used in Module1, Lesson 1 once
-ANTHROPIC_API_KEY='your_anthropic_api_key_here'
-GOOGLE_API_KEY='your_google_api_key_here'
-
-# Optional for evaluation and tracing
-LANGSMITH_API_KEY='your_langsmith_api_key_here'
-# uncomment to set tracing to true when you set up your LangSmith account
-#LANGSMITH_TRACING=true
-LANGSMITH_PROJECT=lca-lc-foundation
-# Uncomment the following if you are on the EU instance:
-#LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com
-```
-
-
-Make a virtual environment and install dependencies. [More info](#python-virtual-environments)
-
-<details open>
-<summary>Using uv (recommended)</summary>
-
-```bash
+git clone https://github.com/codeviloria/camino-lcae-langchain-local.git
+cd camino-lcae-langchain-local
+cp .env.example .env
 uv sync
 ```
 
-</details>
+Edita el `.env` con `OLLAMA_BASE_URL`, `TAVILY_API_KEY` y, de forma opcional, `LANGSMITH_API_KEY`.
 
-<details>
-<summary>Using pip</summary>
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-</details>
-
-### Setup Verification
-
-After completing the Setup section, we recommend you run the following command to verify your environment.
-
-<details open>
-<summary>Using uv</summary>
+En el servidor de Ollama:
 
 ```bash
-uv run python env_utils.py
+ollama pull gemma4
+ollama pull qwen3:8b
 ```
 
-</details>
+Si Ollama corre en otra máquina, arráncalo con `OLLAMA_HOST=0.0.0.0` y abre el puerto 11434 en el firewall.
 
-<details>
-<summary>Using pip</summary>
-
-```bash
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-python env_utils.py
-```
-
-</details>
-
-[If the script flags issues, see this section below.](#setup-verification-issues)
-
-### Run Notebooks [More Info](#development-environment)
-
-<details open>
-<summary>Using uv (recommended)</summary>
+Para los notebooks:
 
 ```bash
 uv run jupyter lab
 ```
 
-</details>
-
-<details>
-<summary>Using pip</summary>
+Para el agente del módulo 1 en LangGraph Studio:
 
 ```bash
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-jupyter lab
-```
-
-</details>
-
-### Run Studio (optional)
-
-Ensure you are in the notebooks/module-1 or notebooks/module-3 directory
-
- <details open>
-<summary>Using uv (recommended)</summary>
-
-```bash
+cd notebooks/module-1
 uv run langgraph dev
 ```
 
-</details>
+Luego abre `https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024`.
 
-<details>
-<summary>Using pip</summary>
+## 🔒 Privacidad del repo
 
-```bash
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-langgraph dev
-```
+Antes de publicar, las salidas de los notebooks se sanitizaron:
+- Las celdas de verificación de keys ya no imprimen fragmentos de la key y se borraron sus salidas.
+- Se quitaron los IDs de tenant de LangSmith, la IP del servidor y las rutas locales.
+- Se reemplazaron las grabaciones de voz por un aviso.
 
-</details>
+El `.env` nunca se versiona (está en `.gitignore`); usa [`.env.example`](.env.example) como plantilla.
 
-## 📚 Lessons
-This repository contains three Modules that serve as introductions to many of LangChain's most-used features.
+## 📚 Créditos
 
----
-
-### Module 1: Create Agent
-
-- Foundational models
-- Tools
-- Short-Term Memory
-- Multimodal Messages
-- Project: Personal Chef
-
-### Module 2: Advanced Agent
-
-- Model Context Protocol (MCP)
-- Context and State
-- Multi-Agent Systems
-- Project: Wedding Planner
-
-### Module 3: Production-Ready Agent
-
-- What is Middleware?
-- Managing Long Conversations
-- Human In The Loop (HITL)
-- Dynamic Agents
-- Project: Email Assistant
-- Bonus: Agent Chat UI
-
-## 📖 Related Resources
-
-### Setup Verification Issues
-
-**What the verification procedure checks:**
-- ✅ Python executable location and version (must be >=3.12, <3.14)
-- ✅ Virtual environment is properly activated
-- ✅ Required packages are installed with correct versions
-- ✅ Packages are in the correct Python version's site-packages
-- ✅ Environment variables (API keys) are properly configured
-
-**Configuration Issues and Solutions:**
-
-<details>
-<summary>ImportError when running env_utils.py</summary>
-
-If you see an error like `ModuleNotFoundError: No module named 'dotenv'`, you're likely running Python outside the virtual environment.
-
-**Solution:**
-- Use `uv run python env_utils.py` (recommended), or
-- Activate the virtual environment first:
-  - macOS/Linux: `source .venv/bin/activate`
-  - Windows: `.venv\Scripts\activate`
-
-</details>
-
-<details>
-<summary>Environment Variable Conflicts</summary>
-
-If you see a warning about "ENVIRONMENT VARIABLE CONFLICTS DETECTED", you have API keys set in your system environment that differ from your .env file. Since `load_dotenv()` doesn't override existing variables by default, your system values will be used.
-
-**Solutions:**
-1. Do nothing and accept the system environment variable value
-2. Unset the conflicting system environment variables for this shell session (commands provided in warning)
-3. Use `load_dotenv(override=True)` in your notebooks to force .env values to take precedence
-4. Update your .env file or shell init so the values are in agreement
-
-</details>
-
-<details>
-<summary>LangSmith Tracing Errors</summary>
-
-If you see "LANGSMITH_TRACING is enabled but LANGSMITH_API_KEY still has the example/placeholder value", you need to either:
-1. Set a valid LangSmith API key in your .env file, or
-2. Comment out or set `LANGSMITH_TRACING=false` in your .env file
-
-Note: LangSmith is optional for evaluation and tracing. The course works without it.
-
-</details>
-
-<details>
-<summary>Wrong Python Version</summary>
-
-If you see a warning about Python version not satisfying requirements, you need Python >=3.12 and <3.14.
-
-**Solution:**
-- If using `uv`: Run `uv sync` which will automatically install the correct Python version
-- If using pip: Install Python 3.12 or 3.13 using [pyenv](#python-virtual-environments) or from [python.org](https://www.python.org/downloads/)
-
-</details>
-
-### Python Virtual Environments
-
-Managing your Python version is often best done with virtual environments. This allows you to select a Python version for the course independent of the system Python version.
-
-<details open>
-<summary>Using uv (recommended)</summary>
-
-`uv` will install a version of Python compatible with the versions specified in the `pyproject.toml` in the `.venv` directory when running the `uv sync` specified above. It will use this version when invoking with `uv run`. For additional information, please see [uv](https://docs.astral.sh/uv/).
-</details>
-
-<details>
-<summary>Using pyenv + pip</summary>
-
-If you are using pip instead of uv, you may prefer using pyenv to manage your Python versions. For additional information, please see [pyenv](https://github.com/pyenv/pyenv).
-
-```bash
-pyenv install 3.12
-pyenv local 3.12
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-</details>
-
-### Model Providers
-
-If you don't have an OpenAI API key, you can sign up [here](https://openai.com/index/openai-api/). The course primarily uses gpt-5-nano which is very inexpensive.  If desired, you may also obtain additional API keys for [Anthropic](https://console.anthropic.com) or [Google](https://ai.google.dev/gemini-api/docs/quickstart).
-
-This course has been created using particular models and model providers.  You can use other providers, but you will need to update the API keys in the .env file and make some necessary code changes. LangChain supports many chat model providers. [More Info](https://docs.langchain.com/oss/python/integrations/providers/all_providers).
-
-Tavily is a search provider that returns search results in an LLM-friendly way. They have a generous free tier. [Tavily](https://tavily.com)
-
-### Getting Started with LangSmith
-
-- Create a [LangSmith](https://smith.langchain.com/) account
-- Create a LangSmith API key
-
-<img width="600" alt="LangSmith Dashboard" src="https://github.com/user-attachments/assets/e39b8364-c3e3-4c75-a287-d9d4685caad5" />
-
-<img width="600" alt="LangSmith API Keys" src="https://github.com/user-attachments/assets/2e916b2d-e3b0-4c59-a178-c5818604b8fe" />
-
-- Update the .env file you created with your new LangSmith API Key.
-- Check that LANGSMITH_TRACING is uncommented and set to true.
-
-For more information on LangSmith, see our docs [here](https://docs.langchain.com/langsmith/home).
-
-**Note:** If you enable LangSmith tracing by setting `LANGSMITH_TRACING=true` in your .env file, make sure you have a valid `LANGSMITH_API_KEY` set. The environment verification script (`env_utils.py`) will warn you if tracing is enabled without a valid key.
-
-### Environment Variables
-
-This course uses the [dotenv](https://pypi.org/project/python-dotenv) module to read key-value pairs from the .env file and set them in the environment in the Jupyter notebooks. They do not need to be set globally in your system environment.
-
-**Note:** If you have API keys already set in your system environment, they may conflict with the ones in your .env file. The `env_utils.py` verification script will detect and warn you about such conflicts. By default, `load_dotenv()` does not override existing environment variables.
-
-
-### Development Environment
-
-The course uses [Jupyter](https://jupyter.org/) notebooks. The Jupyter package is installed in the virtual environment and can be run as described above. Jupyter notebooks can also be edited and run in VSCode or other VSCode variants such as Windsurf or Cursor.
+- Curso y notebooks originales: [LangChain Academy](https://academy.langchain.com/courses/foundation-introduction-to-langchain-python) · [`langchain-ai/lca-lc-foundations`](https://github.com/langchain-ai/lca-lc-foundations), licencia [MIT](LICENSE).
+- README original del curso: [docs/COURSE_README.md](docs/COURSE_README.md).

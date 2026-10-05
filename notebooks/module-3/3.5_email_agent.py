@@ -1,3 +1,16 @@
+"""Email Agent (Módulo 3, proyecto) servido con `langgraph dev`.
+
+🟢 ADAPTADO LOCAL — cambios respecto al curso (ver comentarios 🔸/🟢 abajo):
+  - "gpt-5-nano" (API de pago) → get_model("gemma4:latest") desde local_model.py (raíz del repo).
+  - Sin checkpointer: LangGraph Server maneja la persistencia (igual que en el curso).
+
+Uso (desde esta carpeta):
+    uv run langgraph dev
+Luego: Studio (https://smith.langchain.com/studio/?baseUrl=http://127.0.0.1:2024)
+o Agent Chat UI (agent-chat-ui/, http://localhost:3000, assistant "agent").
+"""
+import sys
+import pathlib
 from dotenv import load_dotenv
 from dataclasses import dataclass
 from langchain.agents import AgentState, create_agent
@@ -9,6 +22,11 @@ from langchain.agents.middleware import ModelRequest, ModelResponse
 from typing import Callable
 
 load_dotenv()
+
+# 🟢 ADAPTADO LOCAL: local_model.py vive en la raíz del repo
+_here = pathlib.Path(__file__).resolve().parent
+sys.path.insert(0, str(next(p for p in [_here, *_here.parents] if (p / "local_model.py").exists())))
+from local_model import get_model  # noqa: E402
 
 
 @dataclass
@@ -92,8 +110,10 @@ def dynamic_prompt_func(request: ModelRequest) -> str:
         return unauthenticated_prompt
 
 
+# 🔸 ORIGINAL DEL CURSO: agent = create_agent("gpt-5-nano", ...)  → API de pago
+# 🟢 ADAPTADO LOCAL: gemma4 en Ollama
 agent = create_agent(
-        "gpt-5-nano",
+        get_model("gemma4:latest"),
         tools=[authenticate, check_inbox, send_email],
         state_schema=AuthenticatedState,
         context_schema=EmailContext,

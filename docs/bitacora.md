@@ -113,3 +113,8 @@ Registro cronológico. Una entrada por sesión de estudio.
 - Referencia: Smashing Pumpkins (24 canciones vendidas). 2º intento: exploró el esquema pero respondió **System Of A Down** (incorrecto): usó `Track.ArtistId`, que no existe, y SQLite no dio error → todos empatan en 2240. Sin error ≠ correcto.
 - 3er intento: esquema real (`db.get_table_info`) + camino de JOIN en el prompt → **Smashing Pumpkins ✅**. Celda evaluadora contra la referencia: v2 ❌, v3 ✅.
 - **Módulo 2 terminado.** Próximo paso: **Módulo 3 (Production-Ready Agent)**.
+
+### 2026-10-05 — Módulo 3 adaptado a local ✅
+- 6 notebooks + `3.5_email_agent.py` con la convención 🔸/🟢. Cambios: `gpt-5-nano`/`gpt-4o-mini`/Claude → gemma4 y qwen3:8b (32K) en *dynamic models*; Tavily `max_results=3`; celda EXTRA con rol `internal`.
+- Los 7 agentes compilan sin llamar al modelo (validación previa). Falta correrlos.
+- Próximo paso: correr 3.2 → 3.5 y el proyecto en Agent Chat UI.

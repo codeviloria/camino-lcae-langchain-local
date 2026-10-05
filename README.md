@@ -107,7 +107,11 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M2.4 Wedding Planner (proyecto: 3 subagentes + state + MCP + SQL) | ✅ (3 corridas) | [nota](docs/module-2/M2.4-wedding-planner.md) |
 | | M2.B Bonus RAG (PDF → embeddings locales → agente) | ✅ | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
 | | M2.B Bonus SQL (text-to-SQL sobre Chinook) | ✅ (3 intentos: v3 correcto y evaluado) | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
-| | Módulo 3: production-ready agent | ⬜ | |
+| | M3.0 Módulo 3 adaptado a local (middleware) | ✅ adaptado | [nota](docs/module-3/M3.0-adaptacion-local.md) |
+| | M3.2 Managing Messages (summarization, trim) | ⏳ por correr | |
+| | M3.3 Human-in-the-Loop | ⏳ por correr | |
+| | M3.4 Dynamic models / prompts / tools | ⏳ por correr | |
+| | M3.5 Email Agent (proyecto + Agent Chat UI) | ⏳ por correr | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
 | 04 · Monitoring Production Agents | | ⬜ | |

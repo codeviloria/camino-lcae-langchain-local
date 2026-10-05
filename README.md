@@ -21,17 +21,68 @@ Ver la [guía del examen](docs/examen-lcae.md).
 
 ## 🖥️ Arquitectura del lab
 
+### Infraestructura
 ```mermaid
 flowchart LR
-    A["Workstation Ubuntu<br/>JupyterLab · uv · langgraph dev"] -- "HTTP :11434" --> B["Servidor Windows<br/>Ollama · CPU i7-9700 · 32 GB · sin GPU"]
+    A["Workstation Ubuntu<br/>JupyterLab · uv · langgraph dev"] -- "HTTP :11434 (LAN)" --> B["Servidor Windows<br/>Ollama · CPU i7-9700 · 32 GB · sin GPU"]
     A -- "tracing" --> C["LangSmith<br/>(plan gratis)"]
     A -- "búsqueda web" --> D["Tavily API<br/>(plan gratis)"]
+    A -- "MCP remoto" --> E["Kiwi.com MCP<br/>(vuelos)"]
 ```
+
+### Cómo se conecta el agente con cada tipo de tool
+Un mismo patrón (`create_agent` + tools) consume fuentes muy distintas. El modelo solo ve **nombre, docstring y argumentos** de cada tool; lo que hay detrás puede ser una API, un servidor MCP, una base SQL o un vector store.
+
+```mermaid
+flowchart TB
+    U(["Usuario"]) --> AG["Agente · create_agent<br/>gemma4 en Ollama (local)"]
+    AG <-->|"state · context · checkpointer"| MEM[("Memoria del agente<br/>InMemorySaver / thread_id")]
+
+    subgraph LOCAL["🏠 100 % local (LAN, sin costo)"]
+        LLM["Ollama · chat<br/>gemma4 · qwen3 · gemma3"]
+        EMB["Ollama · embeddings<br/>nomic-embed-text (768 dim)"]
+        SQL[("SQLite · Chinook.db<br/>SQLDatabase → db.run()")]
+        VS[("Vector store<br/>InMemoryVectorStore (RAM)")]
+        MCPL["Servidor MCP propio<br/>FastMCP · stdio"]
+        PY["Tools Python<br/>@tool (cálculos, state)"]
+    end
+
+    subgraph EXT["🌐 Servicios externos (planes gratis)"]
+        TAV["Tavily · búsqueda web"]
+        KIWI["Kiwi.com · MCP remoto<br/>streamable_http"]
+        LS["LangSmith · tracing"]
+    end
+
+    AG --> LLM
+    AG -->|"tool: search_handbook"| VS
+    PDF["PDF del handbook"] -->|"loader → splitter → chunks"| EMB --> VS
+    AG -->|"tool: sql_query (text-to-SQL)"| SQL
+    AG -->|"tools vía MultiServerMCPClient"| MCPL
+    AG -->|"tools vía MultiServerMCPClient"| KIWI
+    AG -->|"tool: web_search"| TAV
+    AG -->|"subagents as tools"| SUB["Subagentes<br/>(vuelos · venues · playlist)"]
+    SUB --> KIWI & TAV & SQL
+    AG -.->|"traces de cada paso"| LS
+```
+
+| Tipo de tool | Dónde vive | Cómo se conecta | Lección | Lo que aprendí |
+|---|---|---|---|---|
+| **Modelo de chat** | Ollama local | `ChatOllama` vía [`local_model.py`](local_model.py) | [M1.1](docs/module-1/M1.1-foundational-models.md) | `reasoning=False` y `num_ctx` según el tamaño de las salidas de tools |
+| **Tool Python** | Mismo proceso | `@tool` + `ToolRuntime` + `Command` | [M1.3](docs/module-1/M1.3-tools.md) · [M2.2](docs/module-2/M2.2b-state.md) | La docstring es la "interfaz" que lee el modelo |
+| **API web** | Tavily (externa) | `@tool` que llama al SDK | [M1.4](docs/module-1/M1.4-web-search.md) | La salida de la tool es latencia: limitar `max_results` |
+| **MCP local** | Subproceso propio | `MultiServerMCPClient` · `stdio` | [M2.1](docs/module-2/M2.1-mcp.md) | Tools MCP son async (`ainvoke`) |
+| **MCP remoto** | Kiwi.com | `MultiServerMCPClient` · `streamable_http` + interceptor de reintentos | [M2.1b](docs/module-2/M2.1b-travel-agent.md) · [M2.4](docs/module-2/M2.4-wedding-planner.md) | Filtrar tools y subir `num_ctx`; errores como observación |
+| **Base de datos SQL** | SQLite local | `SQLDatabase` + tool `sql_query` | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) · [M2.4](docs/module-2/M2.4-wedding-planner.md) | Dar el esquema real; el SQL puede correr y mentir → evaluar contra referencia |
+| **RAG** | Embeddings en Ollama + vector store en RAM | loader → splitter → `OllamaEmbeddings` → `InMemoryVectorStore` → tool | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) | InMemory no persiste; mismo modelo de embeddings para indexar y consultar |
+| **Subagentes** | Otros `create_agent` | *Subagents as tools* + state compartido | [M2.3](docs/module-2/M2.3-multi-agent.md) · [M2.4](docs/module-2/M2.4-wedding-planner.md) | Los datos obligatorios deben llegar al subagente por el state |
+| **Observabilidad** | LangSmith | Variables `LANGSMITH_*` + `tags` | [Tracing](docs/langsmith-tracing-monitor.md) | El trace muestra el input real de cada tool (p. ej. el SQL) |
+
+> **Portabilidad:** todas las integraciones cumplen las interfaces de `langchain-core` (chat model, embeddings, vector store, tool). Pasar de OpenAI a Ollama, o de `InMemoryVectorStore` a Chroma/pgvector, es cambiar el `import` y la construcción del objeto; el agente no cambia.
 
 | Pieza | Uso |
 |---|---|
 | [`local_model.py`](local_model.py) | `get_model()` reemplaza a `init_chat_model("gpt-5-nano")` en todos los notebooks |
-| Ollama | `gemma4:latest` (texto, tools, visión y audio), `qwen3:8b`, `qwen3:4b`, `gemma3:4b` |
+| Ollama | Chat: `gemma4:latest` (texto, tools, visión y audio), `qwen3:8b`, `qwen3:4b`, `gemma3:4b`. Embeddings: `nomic-embed-text` |
 | LangSmith | Tracing de cada ejecución (dominio Monitor) |
 | Tavily | Tool de búsqueda web |
 
@@ -102,9 +153,10 @@ Servidores MCP usados y lo que exponen: [docs/mcp-catalog.md](docs/mcp-catalog.m
 | `OpenAIEmbeddings` (bonus RAG) | `OllamaEmbeddings("nomic-embed-text")` |
 | `gpt-audio` (M1.6) | `gemma4:latest` + audio 16 kHz mono |
 | Keys de OpenAI, Anthropic y Google | No se necesitan |
+| `MultiServerMCPClient` sin filtro (M2.1b, M2.4) | Solo la tool `search-flight` de Kiwi y `num_ctx=32768` |
 | `InMemorySaver` en el grafo de `langgraph dev` | Eliminado: el servidor maneja la persistencia |
 
-Las celdas originales quedan comentadas junto a las adaptadas (`## Esto no lo corrí, lo adapté a Ollama local`).
+Las celdas originales quedan comentadas junto a las adaptadas: **🔸 ORIGINAL DEL CURSO** (con el motivo) → **🟢 ADAPTADO LOCAL** (la que corre). Ver la convención en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 
 ## 🚀 Cómo correrlo
 
@@ -124,6 +176,7 @@ En el servidor de Ollama:
 ```bash
 ollama pull gemma4
 ollama pull qwen3:8b
+ollama pull nomic-embed-text
 ```
 
 Si Ollama corre en otra máquina, arráncalo con `OLLAMA_HOST=0.0.0.0` y abre el puerto 11434 en el firewall.
@@ -149,6 +202,7 @@ Antes de publicar, las salidas de los notebooks se sanitizaron:
 - Las celdas de verificación de keys ya no imprimen fragmentos de la key y se borraron sus salidas.
 - Se quitaron los IDs de tenant de LangSmith, la IP del servidor y las rutas locales.
 - Se reemplazaron las grabaciones de voz por un aviso.
+- Se quitaron nombres personales de prompts y nombres de tools, y se taparon IDs en las capturas de LangSmith.
 
 El `.env` nunca se versiona (está en `.gitignore`); usa [`.env.example`](.env.example) como plantilla.
 

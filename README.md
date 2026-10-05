@@ -110,7 +110,7 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M3.0 Módulo 3 adaptado a local (middleware) | ✅ adaptado | [nota](docs/module-3/M3.0-adaptacion-local.md) |
 | | M3.2 Managing Messages (summarization, trim, checkpointer) | ✅ | [nota](docs/module-3/M3.2-managing-messages.md) |
 | | M3.3 Human-in-the-Loop (approve / edit / reject) | ✅ | [nota](docs/module-3/M3.3-hitl.md) |
-| | M3.4 Dynamic models / prompts / tools | ⏳ por correr | |
+| | M3.4 Dynamic models / prompts / tools | 🔄 models ✅ · prompts ✅ · tools ⏳ | [nota](docs/module-3/M3.4-dynamic.md) |
 | | M3.5 Email Agent (proyecto + Agent Chat UI) | ⏳ por correr | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
@@ -144,6 +144,7 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | Recortar el historial puede borrar la evidencia | `SummarizationMiddleware` pasó 9 mensajes a 3 sin perder hechos; el trim de `ToolMessage`s borró `temp=42C` y el agente no pudo responder la temperatura | [M3.2](docs/module-3/M3.2-managing-messages.md) |
 | HITL solo protege lo que el modelo pide | Sin system prompt, gemma4 no llamó ninguna tool (la docstring pedía una "address" inexistente) → nunca hubo pausa. Con prompt explícito: pausa, approve, edit y reject OK | [M3.3](docs/module-3/M3.3-hitl.md) |
 | Las decisiones HITL son datos de entrenamiento | Con un prompt de reintento, gemma4 volvió a pedir `send_email` tras el Reject (pero con el mismo texto). `decidir()` guardó approve/edit/reject como 3 ejemplos JSONL para SFT/DPO | [M3.3](docs/module-3/M3.3-hitl.md) |
+| El ruteo de modelos no se ve como un paso | `wrap_model_call` mandó 1 mensaje a gemma4 y 11 a qwen3:8b (32K); la elección solo aparece en `model_name` / `ls_model_name` del trace → loguear el motivo | [M3.4](docs/module-3/M3.4-dynamic.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 

@@ -87,6 +87,21 @@ HITL: decisiones `approve`, `edit`, `reject`, `respond`; **requiere checkpointer
 - El modelo no puede usar una tool que el middleware le ocultó (control de acceso real).
 - `langchain-community` es legado; integraciones en `langchain-<proveedor>`.
 - Status *success* no significa resultado correcto.
+- El modelo que eligió un middleware de ruteo no aparece como tool: se ve en `response_metadata["model_name"]` o en el metadata del trace (`ls_model_name`).
+
+## 🧠 Mnemotecnias (módulos 1–3)
+| Concepto | Mnemotecnia |
+|---|---|
+| Checkpointer / `thread_id` | **Libreta y página**: la libreta guarda la conversación; cada `thread_id` es una página |
+| Context vs State | **C**ontext = **C**arnet (no cambia). **S**tate = **S**e mueve |
+| `wrap_model_call` | **Teatro:** cambia **actor** (modelo), **guion** (prompt) o **utilería** (tools) antes de cada escena |
+| Patrón del middleware | **L-O-H:** Leer → Override → Handler |
+| Orden de hooks | **"Entra, piensa, revisa, sale":** `before_agent` (entra) → `before_model`/`wrap_model_call` (piensa) → `after_model` (revisa: aquí pausa HITL) → `after_agent` (sale) |
+| Decisiones HITL | **"A-E-R-R":** **A**pprove, **E**dit, **R**eject, **R**espond |
+| HITL necesita | **"Libreta + misma página":** checkpointer + mismo `thread_id` |
+| Leer mensajes | **Fila de niños:** `[0]` el primero, `[-1]` el último (la respuesta) |
+| Mensajes que importan | Solo **`content`** y **`tool_calls`**; lo demás es metadata |
+| Text-to-SQL / RAG | **"Sin error ≠ correcto":** comparar contra una referencia |
 
 ## ✍️ Autoevaluación (responde antes de abrir)
 <details><summary>¿Qué diferencia hay entre state y runtime context?</summary>

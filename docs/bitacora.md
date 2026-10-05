@@ -134,3 +134,12 @@ Registro cronológico. Una entrada por sesión de estudio.
 - Flujo completo en un thread: reject → reintento → edit → enviado. `decidir()` generó 3 ejemplos JSONL (approve/edit/reject).
 - Idea propia documentada: decisiones HITL como datos para SFT/DPO/evaluación.
 - Creada la **hoja de repaso del stack y el flow** (módulos 1–3) para repasar antes del examen.
+
+### 2026-10-05 — M3.4 Dynamic models ✅
+- `wrap_model_call` + `request.override(model=...)`: 1 mensaje → gemma4; 11 mensajes → qwen3:8b (32K). Confirmado con `response_metadata["model_name"]`.
+- En LangSmith la elección no aparece como tool: está en el metadata del run del modelo (`ls_model_name`). Agregué una celda EXTRA con log del motivo y `tags`.
+
+### 2026-10-05 — M3.4 Dynamic prompts ✅
+- `@dynamic_prompt` + `runtime.context.user_language`: misma pregunta → irlandés, español y francés correctos (sin tools, 1 llamada).
+- Hallazgo: el system prompt dinámico **no se guarda** en `messages`; agregué un middleware "espía" para verlo.
+- Agregué mnemotecnias (teatro: actor/guion/utilería, L-O-H, Carnet vs Se mueve, A-E-R-R) a M3.4 y a la hoja de repaso.

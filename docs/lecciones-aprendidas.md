@@ -93,6 +93,8 @@ Reglas generales que salen de las lecciones. El detalle de cada caso está en su
 - **Cada decisión consume la pausa:** para probar otra decisión hace falta un `invoke` (o thread) nuevo. ([M3.3 HITL](module-3/M3.3-hitl.md))
 - **Pedir reintento no garantiza que use la crítica:** tras el Reject, gemma4 volvió a pedir `send_email` con el mismo texto. Para cambios concretos, `edit` es más fiable. ([M3.3 HITL](module-3/M3.3-hitl.md))
 - **Las decisiones HITL son datos de entrenamiento:** approve = ejemplo bueno (SFT), edit = corrección, reject + motivo = preferencia (DPO) y caso de evaluación. Registrarlas **antes** de reanudar. ([M3.3 HITL](module-3/M3.3-hitl.md))
+- **El ruteo de modelos se audita, no se ve:** el middleware cambia el modelo dentro de la llamada; en el trace solo queda `ls_model_name`. Loguear el motivo de la decisión. ([M3.4](module-3/M3.4-dynamic.md))
+- **El system prompt dinámico no queda en el historial:** `@dynamic_prompt` lo inyecta en cada llamada; para auditarlo, LangSmith o un middleware espía. ([M3.4](module-3/M3.4-dynamic.md))
 
 ## Prompting
 - **Con modelos pequeños:** formato explícito ("Respond ONLY…") y few-shot como `HumanMessage`/`AIMessage`. ([M1.2 Prompting](module-1/M1.2-prompting.md))

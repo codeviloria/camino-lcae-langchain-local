@@ -110,8 +110,9 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M3.0 Módulo 3 adaptado a local (middleware) | ✅ adaptado | [nota](docs/module-3/M3.0-adaptacion-local.md) |
 | | M3.2 Managing Messages (summarization, trim, checkpointer) | ✅ | [nota](docs/module-3/M3.2-managing-messages.md) |
 | | M3.3 Human-in-the-Loop (approve / edit / reject) | ✅ | [nota](docs/module-3/M3.3-hitl.md) |
-| | M3.4 Dynamic models / prompts / tools | 🔄 models ✅ · prompts ✅ · tools ⏳ | [nota](docs/module-3/M3.4-dynamic.md) |
-| | M3.5 Email Agent (proyecto + Agent Chat UI) | ⏳ por correr | |
+| | M3.4 Dynamic models / prompts / tools | ✅ models · prompts · tools (+ hallazgo de seguridad) | [nota](docs/module-3/M3.4-dynamic.md) |
+| | M3.5 Email Agent (proyecto: auth + dynamic tools/prompt + HITL, servido en Studio) | ✅ | [nota](docs/module-3/M3.5-email-agent.md) |
+| | 🏁 **Curso 01 completado** (módulos 1–3 + bonus, 100 % local) | ✅ | [repaso](docs/repaso-stack-flow.md) |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
 | 04 · Monitoring Production Agents | | ⬜ | |
@@ -145,6 +146,12 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | HITL solo protege lo que el modelo pide | Sin system prompt, gemma4 no llamó ninguna tool (la docstring pedía una "address" inexistente) → nunca hubo pausa. Con prompt explícito: pausa, approve, edit y reject OK | [M3.3](docs/module-3/M3.3-hitl.md) |
 | Las decisiones HITL son datos de entrenamiento | Con un prompt de reintento, gemma4 volvió a pedir `send_email` tras el Reject (pero con el mismo texto). `decidir()` guardó approve/edit/reject como 3 ejemplos JSONL para SFT/DPO | [M3.3](docs/module-3/M3.3-hitl.md) |
 | El ruteo de modelos no se ve como un paso | `wrap_model_call` mandó 1 mensaje a gemma4 y 11 a qwen3:8b (32K); la elección solo aparece en `model_name` / `ls_model_name` del trace → loguear el motivo | [M3.4](docs/module-3/M3.4-dynamic.md) |
+| 🚨 Ocultar una tool no es bloquearla | Con `override(tools=[web_search])`, el rol `external` igual ejecutó `sql_query` (el modelo la nombró porque aparecía en el prompt). Corregido con un guardia `@wrap_tool_call` (lista blanca por rol): bloqueó a `external` incluso cuando el usuario pidió la tool por nombre y cuando gemma4 inventó `database_query` | [M3.4](docs/module-3/M3.4-dynamic.md) |
+| En Studio, el middleware `wrap_model_call` no es un nodo | El grafo del Email Agent muestra `model` y `HumanInTheLoopMiddleware.after_model`; dynamic tools/prompt corren **dentro** de `model` | [M3.5](docs/module-3/M3.5-email-agent.md) |
+
+**Evidencia: el Email Agent del módulo 3 (auth + dynamic tools + HITL) en LangGraph Studio con gemma4 local**
+
+![Email Agent en LangGraph Studio](docs/img/M3.5-studio-email-agent.png)
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 

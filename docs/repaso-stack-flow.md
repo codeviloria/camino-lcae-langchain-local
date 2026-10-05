@@ -84,7 +84,7 @@ HITL: decisiones `approve`, `edit`, `reject`, `respond`; **requiere checkpointer
 - En `langgraph dev` **no** se pone checkpointer (lo maneja el servidor).
 - Tools MCP son async → `ainvoke`/`await`.
 - `request.override(...)` devuelve un request **nuevo**.
-- El modelo no puede usar una tool que el middleware le ocultó (control de acceso real).
+- 🚨 **Ocultar una tool no es bloquearla:** `override(tools=...)` solo cambia lo que ve el modelo; si la nombra, se ejecuta. Control de acceso real con `@wrap_tool_call`.
 - `langchain-community` es legado; integraciones en `langchain-<proveedor>`.
 - Status *success* no significa resultado correcto.
 - El modelo que eligió un middleware de ruteo no aparece como tool: se ve en `response_metadata["model_name"]` o en el metadata del trace (`ls_model_name`).
@@ -101,6 +101,7 @@ HITL: decisiones `approve`, `edit`, `reject`, `respond`; **requiere checkpointer
 | HITL necesita | **"Libreta + misma página":** checkpointer + mismo `thread_id` |
 | Leer mensajes | **Fila de niños:** `[0]` el primero, `[-1]` el último (la respuesta) |
 | Mensajes que importan | Solo **`content`** y **`tool_calls`**; lo demás es metadata |
+| Seguridad de tools | **"Esconder la llave no es cerrar la puerta":** ocultar (`wrap_model_call`) ≠ bloquear (`wrap_tool_call`) |
 | Text-to-SQL / RAG | **"Sin error ≠ correcto":** comparar contra una referencia |
 
 ## ✍️ Autoevaluación (responde antes de abrir)

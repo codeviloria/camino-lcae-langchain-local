@@ -95,6 +95,7 @@ Reglas generales que salen de las lecciones. El detalle de cada caso está en su
 - **Las decisiones HITL son datos de entrenamiento:** approve = ejemplo bueno (SFT), edit = corrección, reject + motivo = preferencia (DPO) y caso de evaluación. Registrarlas **antes** de reanudar. ([M3.3 HITL](module-3/M3.3-hitl.md))
 - **El ruteo de modelos se audita, no se ve:** el middleware cambia el modelo dentro de la llamada; en el trace solo queda `ls_model_name`. Loguear el motivo de la decisión. ([M3.4](module-3/M3.4-dynamic.md))
 - **El system prompt dinámico no queda en el historial:** `@dynamic_prompt` lo inyecta en cada llamada; para auditarlo, LangSmith o un middleware espía. ([M3.4](module-3/M3.4-dynamic.md))
+- **🚨 Ocultar una tool no es bloquearla:** `request.override(tools=...)` solo cambia lo que ve el modelo; si la nombra, se ejecuta igual. Control de acceso real: `@wrap_tool_call` que valida permisos antes de ejecutar. El prompt sugiere, el código impone. ([M3.4](module-3/M3.4-dynamic.md))
 
 ## Prompting
 - **Con modelos pequeños:** formato explícito ("Respond ONLY…") y few-shot como `HumanMessage`/`AIMessage`. ([M1.2 Prompting](module-1/M1.2-prompting.md))

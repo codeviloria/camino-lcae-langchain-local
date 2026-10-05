@@ -143,3 +143,18 @@ Registro cronológico. Una entrada por sesión de estudio.
 - `@dynamic_prompt` + `runtime.context.user_language`: misma pregunta → irlandés, español y francés correctos (sin tools, 1 llamada).
 - Hallazgo: el system prompt dinámico **no se guarda** en `messages`; agregué un middleware "espía" para verlo.
 - Agregué mnemotecnias (teatro: actor/guion/utilería, L-O-H, Carnet vs Se mueve, A-E-R-R) a M3.4 y a la hoja de repaso.
+
+### 2026-10-05 — M3.4 Dynamic tools ✅ + 🚨 hallazgo de seguridad
+- `internal` vio `sql_query`; 1er intento falló por `artists` (es `Artist`). Con las tablas en el prompt → 275 ✅.
+- 🚨 `external` **también ejecutó** `sql_query`: `override(tools=...)` solo oculta; la tool sigue registrada y se ejecuta si el modelo la nombra (el nombre salió de mi prompt). Reproducido con modelo simulado.
+- Corrección: guardia `@wrap_tool_call` que valida permisos por rol antes de ejecutar ("Acceso denegado"). Módulo 3.4 completo.
+- Corrida final 3.4 tools: guardia `@wrap_tool_call` verificado con gemma4. `external` → *Acceso denegado* (incluso cuando gemma4 inventó `database_query` y cuando el usuario pidió `sql_query` por nombre); `internal` → 275 ✅.
+
+### 2026-10-05 — M3.5 Email Agent (notebook) ✅
+- Al primer intento: authenticate → (cambian tools y prompt) → check_inbox → resumen → send_email → ⏸️ HITL → approve → enviado. `authenticated: True` en el state.
+- Pendiente: servirlo con `uv run langgraph dev` y probar en Studio / Agent Chat UI.
+
+### 2026-10-05 — M3.5 en LangGraph Studio ✅ — 🏁 Curso 01 completado
+- `uv run langgraph dev` → Studio conectado; grafo `model ↔ HumanInTheLoopMiddleware.after_model → tools/__end__`. Los `wrap_model_call` (dynamic tools/prompt) corren dentro de `model`.
+- **Curso 01 Introduction to LangChain terminado**: módulos 1–3 + bonus, todo con Ollama en CPU, documentado con 🔸/🟢.
+- Próximo: repasar con la hoja de repaso; luego curso 02 (Deep Agents).

@@ -53,8 +53,9 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M2.2a Runtime Context | ✅ | [nota](docs/module-2/M2.2a-runtime-context.md) |
 | | M2.2b State | ✅ | [nota](docs/module-2/M2.2b-state.md) |
 | | M2.3 Multi-Agent (subagents as tools) | ✅ | [nota](docs/module-2/M2.3-multi-agent.md) |
-| | M2.4 Wedding Planner (proyecto: 3 subagentes + state + MCP + SQL) | ✅ parcial | [nota](docs/module-2/M2.4-wedding-planner.md) |
-| | Módulo 2: bonus RAG y SQL (adaptados, por correr) | ⏳ | |
+| | M2.4 Wedding Planner (proyecto: 3 subagentes + state + MCP + SQL) | ✅ (3 corridas) | [nota](docs/module-2/M2.4-wedding-planner.md) |
+| | M2.B Bonus RAG (PDF → embeddings locales → agente) | ✅ | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
+| | M2.B Bonus SQL | ⏳ | |
 | | Módulo 3: production-ready agent | ⬜ | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
@@ -79,6 +80,9 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | Contexto desbordado: el modelo "olvida" la pregunta | Kiwi + historial > 8.192 tokens → el modelo preguntó "¿ciudad de origen?"; con 32K respondió bien (9.866 tokens en un paso) | [M2.1b](docs/module-2/M2.1b-travel-agent.md) |
 | La tool funciona pero el usuario no recibe respuesta | gemma4 actualizó y leyó el state bien, pero su último mensaje llegó vacío (1 token) | [M2.2b](docs/module-2/M2.2b-state.md) |
 | Status *success* ≠ resultado correcto | El Wedding Planner terminó sin errores, pero el subagente de vuelos pidió la fecha en vez de buscar (Kiwi la exige) | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
+| Arreglar un prompt puede romper otra salida | Con la fecha en el state hubo vuelos reales desde Bogotá y costo correcto ($14,85), pero la duración salió en 0 min → hace falta probar regresiones | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
+| El SQL del LLM corre sin error y da un dato falso | `STRFTIME('%M:%S', ms/1000)` sin `'unixepoch'` → todas las duraciones en `00:00`; referencia real 52,8 min. Hay que validar el SQL o fijarlo en el prompt o en la tool | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
+| RAG 100 % local en CPU | Embeddings `nomic-embed-text` (768 dim) + gemma4: respuesta correcta en ~10,5 s. El vector store en memoria se pierde al reiniciar el kernel | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 
@@ -92,6 +96,7 @@ Servidores MCP usados y lo que exponen: [docs/mcp-catalog.md](docs/mcp-catalog.m
 |---|---|
 | `init_chat_model("gpt-5-nano")` / `create_agent("gpt-5-nano")` | `create_agent(model=get_model())` → Ollama |
 | Claude / Gemini en M1.1 | `qwen3:4b`, `gemma3:4b` |
+| `OpenAIEmbeddings` (bonus RAG) | `OllamaEmbeddings("nomic-embed-text")` |
 | `gpt-audio` (M1.6) | `gemma4:latest` + audio 16 kHz mono |
 | Keys de OpenAI, Anthropic y Google | No se necesitan |
 | `InMemorySaver` en el grafo de `langgraph dev` | Eliminado: el servidor maneja la persistencia |

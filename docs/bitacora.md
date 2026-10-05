@@ -93,3 +93,17 @@ Registro cronológico. Una entrada por sesión de estudio.
 - `uv langgraph dev` → error; correcto: `uv run langgraph dev`.
 - Studio "Connection failed": el servidor se caía por `GraphLoadError` (checkpointer `InMemorySaver` en el grafo).
 - Limpieza del `.py`: quitar prints/`list_projects`, checkpointer e invokes; `sys.path` con `__file__`. Versión limpia en [M1.7 Personal Chef](module-1/M1.7-personal-chef.md).
+
+### 2026-10-04 — Módulo 2 (MCP, context, state, multi-agente, Wedding Planner)
+- M2.1 MCP: servidor propio por `stdio` y servidor de terceros; MCP es async → `await`/`ainvoke`.
+- M2.1b Travel Agent (Kiwi): contexto desbordado con 8K; con `num_ctx` 32768 y solo `search-flight` respondió bien.
+- M2.2a/b: runtime context y state con `Command(update=...)`; gemma4 a veces deja vacío el último mensaje.
+- M2.3: subagents as tools con aislamiento de contexto (√456 ≈ 21,354).
+- M2.4 Wedding Planner, 3 corridas. Fecha en el state → vuelos reales desde Bogotá (desde 2.032 EUR) y costo de la playlist $14,85 ✓; duración 0 min ✗ (regresión).
+- Próximo paso: bonus RAG y SQL.
+
+### 2026-10-04 — M2.B Bonus RAG ✅
+- PDF de 1.943 caracteres → **3 chunks** (1000/200) → embeddings `nomic-embed-text` (768 dim) → `InMemoryVectorStore`.
+- El agente reescribió la búsqueda (`'vacation days first year'`) y respondió **10 días** de PTO el primer año ✅. ~10,5 s en CPU.
+- El vector store vive en la RAM del kernel: no hay BD vectorial persistente. Para producción: FAISS/Chroma (local) o pgvector/Qdrant.
+- Próximo paso: **bonus SQL**.

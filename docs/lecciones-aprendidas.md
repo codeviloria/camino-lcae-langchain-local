@@ -71,6 +71,18 @@ Reglas generales que salen de las lecciones. El detalle de cada caso está en su
 - **No pegar comandos con comentarios `#` en zsh:** se toman como argumentos (`cp: target 'rompe'`, `grep: debe: No existe`). El respaldo de `uv.lock` **no se hizo**. Para volver atrás: `git checkout uv.lock && uv sync`.
 - **Aviso `Failed to hardlink files`:** el caché de uv (home) y el proyecto (`/ruta/al/disco`) están en discos distintos. Silenciar con `export UV_LINK_MODE=copy` en `~/.zshrc`.
 
+## Multi-agente
+- **Los datos obligatorios de una tool deben llegar al subagente:** Kiwi exige fecha; sin ella el subagente la pidió. Solución: la fecha en el state y la tool la lee de `runtime.state`. ([M2.4 Wedding Planner](module-2/M2.4-wedding-planner.md))
+- **Status `success` ≠ resultado correcto:** hacen falta evaluadores (dominio Test). ([M2.4 Wedding Planner](module-2/M2.4-wedding-planner.md))
+- **Separar "el agente falló" de "el dato no existe":** Valledupar no tuvo vuelos (aeropuerto regional) y Bogotá sí. ([M2.4 Wedding Planner](module-2/M2.4-wedding-planner.md))
+- **Un arreglo de prompt puede romper otra salida (regresión):** el costo quedó bien, la duración salió en 0 min. ([M2.4 Wedding Planner](module-2/M2.4-wedding-planner.md))
+- **Validar el SQL que sugiere el LLM:** en el Wedding Planner corría sin error pero daba `00:00` (`STRFTIME` sin `'unixepoch'`), usaba una columna inexistente (`T.Title`) y `ORDER BY RANDOM()`. Si el SQL no es confiable, pasarlo en el prompt (few-shot) o fijarlo en el agente (tool con SQL parametrizado). Los totales, en código. ([M2.4 Wedding Planner](module-2/M2.4-wedding-planner.md))
+
+## RAG
+- **`InMemoryVectorStore` no es una base de datos:** los vectores viven en la RAM del kernel y se pierden al reiniciarlo. Para persistir: FAISS o Chroma (local), pgvector o Qdrant (servidor). ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **`chunk_size` se mide en caracteres:** un PDF de 1.943 caracteres con 1000/200 da 3 chunks. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **Mismo modelo de embeddings para indexar y consultar** (`nomic-embed-text`, 768 dim); si se cambia, hay que reindexar. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+
 ## Prompting
 - **Con modelos pequeños:** formato explícito ("Respond ONLY…") y few-shot como `HumanMessage`/`AIMessage`. ([M1.2 Prompting](module-1/M1.2-prompting.md))
 - **Leer la respuesta con `messages[-1]`**, no con un índice fijo. ([M1.2 Prompting](module-1/M1.2-prompting.md))

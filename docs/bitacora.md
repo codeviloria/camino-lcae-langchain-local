@@ -107,3 +107,9 @@ Registro cronológico. Una entrada por sesión de estudio.
 - El agente reescribió la búsqueda (`'vacation days first year'`) y respondió **10 días** de PTO el primer año ✅. ~10,5 s en CPU.
 - El vector store vive en la RAM del kernel: no hay BD vectorial persistente. Para producción: FAISS/Chroma (local) o pgvector/Qdrant.
 - Próximo paso: **bonus SQL**.
+
+### 2026-10-04 — M2.B Bonus SQL — Módulo 2 cerrado ✅
+- 1er intento: gemma4 inventó `artists.popularity` y preguntó el esquema al usuario. La tool sola sí funciona (`SELECT * FROM Artist`).
+- Referencia: Smashing Pumpkins (24 canciones vendidas). 2º intento: exploró el esquema pero respondió **System Of A Down** (incorrecto): usó `Track.ArtistId`, que no existe, y SQLite no dio error → todos empatan en 2240. Sin error ≠ correcto.
+- 3er intento: esquema real (`db.get_table_info`) + camino de JOIN en el prompt → **Smashing Pumpkins ✅**. Celda evaluadora contra la referencia: v2 ❌, v3 ✅.
+- **Módulo 2 terminado.** Próximo paso: **Módulo 3 (Production-Ready Agent)**.

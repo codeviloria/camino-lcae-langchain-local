@@ -82,6 +82,10 @@ Reglas generales que salen de las lecciones. El detalle de cada caso está en su
 - **`InMemoryVectorStore` no es una base de datos:** los vectores viven en la RAM del kernel y se pierden al reiniciarlo. Para persistir: FAISS o Chroma (local), pgvector o Qdrant (servidor). ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
 - **`chunk_size` se mide en caracteres:** un PDF de 1.943 caracteres con 1000/200 da 3 chunks. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
 - **Mismo modelo de embeddings para indexar y consultar** (`nomic-embed-text`, 768 dim); si se cambia, hay que reindexar. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **Text-to-SQL sin esquema = el modelo inventa tablas:** gemma4 consultó `artists`/`popularity` (no existen) y, ante el error, preguntó al usuario. Solución: system prompt que obligue a explorar el esquema y defina las métricas ambiguas. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **SQL que corre sin error puede dar una respuesta falsa:** con el esquema, gemma4 unió por `Track.ArtistId` (no existe); SQLite lo resolvió contra la tabla externa y todos los artistas empataron. Respondió con seguridad *System Of A Down*; la referencia es Smashing Pumpkins. Siempre comparar contra un valor conocido. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **Lo que funcionó en text-to-SQL:** el esquema real en el prompt (`db.get_table_info([...])`) y el camino de JOIN explícito → respuesta correcta en una sola query, confirmada por un evaluador contra la referencia (v2 ❌, v3 ✅). ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
+- **Integraciones en paquetes por proveedor** (`langchain-ollama`, `langchain-tavily`, `langchain-chroma`): cambia el `import`, no el código, porque todas cumplen las interfaces de `langchain-core`. `langchain-community` es legado. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
 
 ## Prompting
 - **Con modelos pequeños:** formato explícito ("Respond ONLY…") y few-shot como `HumanMessage`/`AIMessage`. ([M1.2 Prompting](module-1/M1.2-prompting.md))

@@ -55,7 +55,7 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M2.3 Multi-Agent (subagents as tools) | ✅ | [nota](docs/module-2/M2.3-multi-agent.md) |
 | | M2.4 Wedding Planner (proyecto: 3 subagentes + state + MCP + SQL) | ✅ (3 corridas) | [nota](docs/module-2/M2.4-wedding-planner.md) |
 | | M2.B Bonus RAG (PDF → embeddings locales → agente) | ✅ | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
-| | M2.B Bonus SQL | ⏳ | |
+| | M2.B Bonus SQL (text-to-SQL sobre Chinook) | ✅ (3 intentos: v3 correcto y evaluado) | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
 | | Módulo 3: production-ready agent | ⬜ | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
@@ -83,6 +83,9 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | Arreglar un prompt puede romper otra salida | Con la fecha en el state hubo vuelos reales desde Bogotá y costo correcto ($14,85), pero la duración salió en 0 min → hace falta probar regresiones | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
 | El SQL del LLM corre sin error y da un dato falso | `STRFTIME('%M:%S', ms/1000)` sin `'unixepoch'` → todas las duraciones en `00:00`; referencia real 52,8 min. Hay que validar el SQL o fijarlo en el prompt o en la tool | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
 | RAG 100 % local en CPU | Embeddings `nomic-embed-text` (768 dim) + gemma4: respuesta correcta en ~10,5 s. El vector store en memoria se pierde al reiniciar el kernel | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
+| Sin esquema, el LLM inventa la BD | gemma4 consultó `artists.popularity` (no existe) y luego preguntó al usuario en vez de explorar `sqlite_master` | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
+| SQL válido, respuesta falsa | Con el esquema, gemma4 respondió *System Of A Down* con seguridad; su JOIN usaba una columna inexistente que SQLite resolvió en silencio (todos empatados en 2240). Referencia: Smashing Pumpkins | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
+| El esquema en el prompt corrige el text-to-SQL | `db.get_table_info()` + camino de JOIN → *Smashing Pumpkins* ✅ en una query; un evaluador contra la referencia marcó v2 ❌ y v3 ✅ | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 

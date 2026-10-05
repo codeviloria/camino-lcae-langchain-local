@@ -52,7 +52,9 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M2.1b Travel Agent (MCP remoto Kiwi.com) | ✅ | [nota](docs/module-2/M2.1b-travel-agent.md) |
 | | M2.2a Runtime Context | ✅ | [nota](docs/module-2/M2.2a-runtime-context.md) |
 | | M2.2b State | ✅ | [nota](docs/module-2/M2.2b-state.md) |
-| | Módulo 2: multi-agente, wedding planner, RAG, SQL (adaptados, por correr) | ⏳ | |
+| | M2.3 Multi-Agent (subagents as tools) | ✅ | [nota](docs/module-2/M2.3-multi-agent.md) |
+| | M2.4 Wedding Planner (proyecto: 3 subagentes + state + MCP + SQL) | ✅ parcial | [nota](docs/module-2/M2.4-wedding-planner.md) |
+| | Módulo 2: bonus RAG y SQL (adaptados, por correr) | ⏳ | |
 | | Módulo 3: production-ready agent | ⬜ | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
@@ -76,6 +78,7 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | El prompt es la palanca más barata de latencia | Limitar la salida y `max_results=3`: 107,9 s → 31,8 s y 863 → 220 tokens, y además cita fuentes | [M1.7](docs/module-1/M1.7-personal-chef.md) |
 | Contexto desbordado: el modelo "olvida" la pregunta | Kiwi + historial > 8.192 tokens → el modelo preguntó "¿ciudad de origen?"; con 32K respondió bien (9.866 tokens en un paso) | [M2.1b](docs/module-2/M2.1b-travel-agent.md) |
 | La tool funciona pero el usuario no recibe respuesta | gemma4 actualizó y leyó el state bien, pero su último mensaje llegó vacío (1 token) | [M2.2b](docs/module-2/M2.2b-state.md) |
+| Status *success* ≠ resultado correcto | El Wedding Planner terminó sin errores, pero el subagente de vuelos pidió la fecha en vez de buscar (Kiwi la exige) | [M2.4](docs/module-2/M2.4-wedding-planner.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 

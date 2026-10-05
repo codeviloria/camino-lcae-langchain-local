@@ -17,7 +17,7 @@ Prepararme para la **LangChain Certified Agent Engineer (LCAE)**, cuyo examen ev
 - **Sin GPU.** Todo en CPU, así que la latencia y los tokens importan y se miden.
 - **Documentación de cada problema** con el formato *problema → causa → solución → regla*.
 
-Ver la [guía del examen](docs/examen-lcae.md).
+Ver la [guía del examen](docs/examen-lcae.md) y la [hoja de repaso del stack y el flow](docs/repaso-stack-flow.md).
 
 ## 🖥️ Arquitectura del lab
 
@@ -108,8 +108,8 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M2.B Bonus RAG (PDF → embeddings locales → agente) | ✅ | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
 | | M2.B Bonus SQL (text-to-SQL sobre Chinook) | ✅ (3 intentos: v3 correcto y evaluado) | [nota](docs/module-2/M2.B-bonus-rag-sql.md) |
 | | M3.0 Módulo 3 adaptado a local (middleware) | ✅ adaptado | [nota](docs/module-3/M3.0-adaptacion-local.md) |
-| | M3.2 Managing Messages (summarization, trim) | ⏳ por correr | |
-| | M3.3 Human-in-the-Loop | ⏳ por correr | |
+| | M3.2 Managing Messages (summarization, trim, checkpointer) | ✅ | [nota](docs/module-3/M3.2-managing-messages.md) |
+| | M3.3 Human-in-the-Loop (approve / edit / reject) | ✅ | [nota](docs/module-3/M3.3-hitl.md) |
 | | M3.4 Dynamic models / prompts / tools | ⏳ por correr | |
 | | M3.5 Email Agent (proyecto + Agent Chat UI) | ⏳ por correr | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
@@ -141,6 +141,9 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | Sin esquema, el LLM inventa la BD | gemma4 consultó `artists.popularity` (no existe) y luego preguntó al usuario en vez de explorar `sqlite_master` | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
 | SQL válido, respuesta falsa | Con el esquema, gemma4 respondió *System Of A Down* con seguridad; su JOIN usaba una columna inexistente que SQLite resolvió en silencio (todos empatados en 2240). Referencia: Smashing Pumpkins | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
 | El esquema en el prompt corrige el text-to-SQL | `db.get_table_info()` + camino de JOIN → *Smashing Pumpkins* ✅ en una query; un evaluador contra la referencia marcó v2 ❌ y v3 ✅ | [M2.B](docs/module-2/M2.B-bonus-rag-sql.md) |
+| Recortar el historial puede borrar la evidencia | `SummarizationMiddleware` pasó 9 mensajes a 3 sin perder hechos; el trim de `ToolMessage`s borró `temp=42C` y el agente no pudo responder la temperatura | [M3.2](docs/module-3/M3.2-managing-messages.md) |
+| HITL solo protege lo que el modelo pide | Sin system prompt, gemma4 no llamó ninguna tool (la docstring pedía una "address" inexistente) → nunca hubo pausa. Con prompt explícito: pausa, approve, edit y reject OK | [M3.3](docs/module-3/M3.3-hitl.md) |
+| Las decisiones HITL son datos de entrenamiento | Con un prompt de reintento, gemma4 volvió a pedir `send_email` tras el Reject (pero con el mismo texto). `decidir()` guardó approve/edit/reject como 3 ejemplos JSONL para SFT/DPO | [M3.3](docs/module-3/M3.3-hitl.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 

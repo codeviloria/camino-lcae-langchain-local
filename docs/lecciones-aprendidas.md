@@ -87,6 +87,13 @@ Reglas generales que salen de las lecciones. El detalle de cada caso está en su
 - **Lo que funcionó en text-to-SQL:** el esquema real en el prompt (`db.get_table_info([...])`) y el camino de JOIN explícito → respuesta correcta en una sola query, confirmada por un evaluador contra la referencia (v2 ❌, v3 ✅). ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
 - **Integraciones en paquetes por proveedor** (`langchain-ollama`, `langchain-tavily`, `langchain-chroma`): cambia el `import`, no el código, porque todas cumplen las interfaces de `langchain-core`. `langchain-community` es legado. ([M2.B Bonus RAG y SQL](module-2/M2.B-bonus-rag-sql.md))
 
+## Middleware y HITL
+- **HITL solo protege lo que el modelo pide:** si el modelo no genera el `tool_call`, el semáforo nunca se activa. Verificar `"__interrupt__" in response`. ([M3.3 HITL](module-3/M3.3-hitl.md))
+- **La docstring es la interfaz de la tool:** `read_email` decía "from the given address" sin tener argumentos y el modelo pidió la dirección en vez de actuar. ([M3.3 HITL](module-3/M3.3-hitl.md))
+- **Cada decisión consume la pausa:** para probar otra decisión hace falta un `invoke` (o thread) nuevo. ([M3.3 HITL](module-3/M3.3-hitl.md))
+- **Pedir reintento no garantiza que use la crítica:** tras el Reject, gemma4 volvió a pedir `send_email` con el mismo texto. Para cambios concretos, `edit` es más fiable. ([M3.3 HITL](module-3/M3.3-hitl.md))
+- **Las decisiones HITL son datos de entrenamiento:** approve = ejemplo bueno (SFT), edit = corrección, reject + motivo = preferencia (DPO) y caso de evaluación. Registrarlas **antes** de reanudar. ([M3.3 HITL](module-3/M3.3-hitl.md))
+
 ## Prompting
 - **Con modelos pequeños:** formato explícito ("Respond ONLY…") y few-shot como `HumanMessage`/`AIMessage`. ([M1.2 Prompting](module-1/M1.2-prompting.md))
 - **Leer la respuesta con `messages[-1]`**, no con un índice fijo. ([M1.2 Prompting](module-1/M1.2-prompting.md))

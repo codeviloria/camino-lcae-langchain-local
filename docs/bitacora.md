@@ -118,3 +118,19 @@ Registro cronológico. Una entrada por sesión de estudio.
 - 6 notebooks + `3.5_email_agent.py` con la convención 🔸/🟢. Cambios: `gpt-5-nano`/`gpt-4o-mini`/Claude → gemma4 y qwen3:8b (32K) en *dynamic models*; Tavily `max_results=3`; celda EXTRA con rol `internal`.
 - Los 7 agentes compilan sin llamar al modelo (validación previa). Falta correrlos.
 - Próximo paso: correr 3.2 → 3.5 y el proyecto en Agent Chat UI.
+
+### 2026-10-05 — M3.2 Managing Messages ✅
+- Summarization: 9 mensajes → 3 (resumen como `HumanMessage` + última pregunta + respuesta), sin perder hechos. Respuesta larga: 782 tokens en 76 s.
+- Trim con `@before_agent`: borró los 2 `ToolMessage`; el agente no supo la temperatura (estaba en uno de ellos) → esperado.
+- Agregué al notebook explicaciones antes de cada celda, una sección de índices/slicing de `response["messages"]` y demos del checkpointer (`get_state`, thread nuevo vs. mismo thread).
+
+### 2026-10-05 — M3.3 Human-in-the-Loop ✅
+- 1er intento: gemma4 pidió la dirección de correo en vez de llamar `read_email` (docstring engañosa) → sin pausa. Con system prompt explícito: pausa ✅.
+- Approve ✅ (Email sent) · Reject ✅ (ToolMessage `status=error`; el modelo no reintentó) · Edit ✅ (se envió mi texto). Las 4 decisiones permitidas incluyen `respond`.
+- Agregué al notebook: helper `nueva_pausa(thread_id)` (una pausa por decisión) y `ver(response)` para leer la salida sin `pprint`.
+
+### 2026-10-05 — M3.3 corrida 3 + dataset HITL ✅
+- Con la línea 3 del prompt, gemma4 **reintentó** tras el Reject (nueva pausa) pero repitió el mismo borrador → pedir reintento ≠ aplicar la crítica.
+- Flujo completo en un thread: reject → reintento → edit → enviado. `decidir()` generó 3 ejemplos JSONL (approve/edit/reject).
+- Idea propia documentada: decisiones HITL como datos para SFT/DPO/evaluación.
+- Creada la **hoja de repaso del stack y el flow** (módulos 1–3) para repasar antes del examen.

@@ -49,7 +49,10 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M1.6 Multimodal (imagen + audio) | ✅ | [nota](docs/module-1/M1.6-multimodal.md) |
 | | M1.7 Personal Chef (proyecto + LangGraph Studio) | ✅ | [nota](docs/module-1/M1.7-personal-chef.md) |
 | | M2.1 MCP (servidor propio + servidor de terceros) | ✅ | [nota](docs/module-2/M2.1-mcp.md) |
-| | Módulo 2: travel agent, context/state, multi-agente, RAG, SQL | ⏳ | |
+| | M2.1b Travel Agent (MCP remoto Kiwi.com) | ✅ | [nota](docs/module-2/M2.1b-travel-agent.md) |
+| | M2.2a Runtime Context | ✅ | [nota](docs/module-2/M2.2a-runtime-context.md) |
+| | M2.2b State | ✅ | [nota](docs/module-2/M2.2b-state.md) |
+| | Módulo 2: multi-agente, wedding planner, RAG, SQL (adaptados, por correr) | ⏳ | |
 | | Módulo 3: production-ready agent | ⬜ | |
 | 02 · Introduction to Deep Agents | | ⬜ | |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
@@ -71,12 +74,14 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | Un modelo multimodal alucina con entrada vacía | Con el micrófono mudo "transcribió" frases que nadie dijo | [M1.6](docs/module-1/M1.6-multimodal.md) |
 | gemma4 es el más rápido del lab para agentes | ~10,8 tok/s generando frente a ~5,7 de qwen3:8b | [M1.7](docs/module-1/M1.7-personal-chef.md) |
 | El prompt es la palanca más barata de latencia | Limitar la salida y `max_results=3`: 107,9 s → 31,8 s y 863 → 220 tokens, y además cita fuentes | [M1.7](docs/module-1/M1.7-personal-chef.md) |
+| Contexto desbordado: el modelo "olvida" la pregunta | Kiwi + historial > 8.192 tokens → el modelo preguntó "¿ciudad de origen?"; con 32K respondió bien (9.866 tokens en un paso) | [M2.1b](docs/module-2/M2.1b-travel-agent.md) |
+| La tool funciona pero el usuario no recibe respuesta | gemma4 actualizó y leyó el state bien, pero su último mensaje llegó vacío (1 token) | [M2.2b](docs/module-2/M2.2b-state.md) |
 
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 
 ![Personal Chef en LangGraph Studio](docs/img/M1.7-studio-personal-chef.png)
 
-Todas las reglas consolidadas: [docs/lecciones-aprendidas.md](docs/lecciones-aprendidas.md) · Observabilidad: [docs/langsmith-tracing-monitor.md](docs/langsmith-tracing-monitor.md)
+Servidores MCP usados y lo que exponen: [docs/mcp-catalog.md](docs/mcp-catalog.md) · Todas las reglas consolidadas: [docs/lecciones-aprendidas.md](docs/lecciones-aprendidas.md) · Observabilidad: [docs/langsmith-tracing-monitor.md](docs/langsmith-tracing-monitor.md)
 
 ## 🔧 Qué cambia respecto al curso original
 

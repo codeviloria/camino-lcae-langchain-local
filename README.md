@@ -178,6 +178,14 @@ Agent Chat UI, cómo conecta y cómo llevarla a producción: [docs/agent-chat-ui
 
 Las celdas originales quedan comentadas junto a las adaptadas: **🔸 ORIGINAL DEL CURSO** (con el motivo) → **🟢 ADAPTADO LOCAL** (la que corre). Ver la convención en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 
+## 🎒 Ruta guiada para aprender (nuevo)
+
+¿Sabes algo de Python y quieres aprender agentes desde cero con este repo? Hay una ruta pensada para estudiantes:
+
+- **[Módulo 1 guiado](notebooks/module-1-guiado/README.md)**: 7 notebooks limpios, con explicaciones sencillas en español, analogías, mnemotecnias, ejercicios "✍️ Tu turno" y mini quizzes.
+- **Tutor en OpenCode** ([`.agents/skills/tutor-lca-intro`](.agents/skills/tutor-lca-intro/SKILL.md)): explica, pregunta y da pistas sin resolver los ejercicios. También funciona con Claude Code y otros agentes que lean `.agents/skills`.
+- **[Guía de instalación en Windows](docs/guia-estudiante-windows.md)**: de cero a correr el primer notebook, con un servidor Ollama compartido (semáforo 🟢🟡🔴 para turnarse).
+
 ## 🚀 Cómo correrlo
 
 **Requisitos:** Python 3.12+, [uv](https://docs.astral.sh/uv/) y [Ollama](https://ollama.com) (en la misma máquina o en otra de la red).

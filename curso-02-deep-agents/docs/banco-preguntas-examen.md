@@ -47,3 +47,25 @@ Se agregan al cerrar cada lección: las del quiz del tutor que fallé, más las 
 
 **b.** Es un filesystem virtual dentro del state. Los backends de disco y sandbox se configuran aparte (M2.2–M2.3).
 </details>
+
+**5.** Para usar un modelo de NVIDIA alojado en OpenRouter, el curso usa `ChatOpenAI`. ¿Por qué?
+- a) Porque NVIDIA es parte de OpenAI
+- b) Porque la API de OpenRouter es compatible con OpenAI: basta cambiar `base_url`
+- c) Porque `init_chat_model` no soporta NVIDIA
+- d) Es un error del curso
+
+<details><summary>Respuesta</summary>
+
+**b.** Muchos proveedores (OpenRouter, Kimi, servidores locales) exponen una API compatible con OpenAI; se reutiliza `ChatOpenAI` apuntando a otro `base_url`.
+</details>
+
+**6.** Con Ollama, un deep agent ignora sus tools y responde raro, sin dar ningún error. ¿Qué revisas primero?
+- a) La API key
+- b) `num_ctx`: si el contexto es chico, Ollama recorta en silencio el system prompt largo del deep agent
+- c) El checkpointer
+- d) La versión de Python
+
+<details><summary>Respuesta</summary>
+
+**b.** Ollama trunca sin avisar cuando el prompt excede el contexto. Los deep agents tienen un system prompt de varios miles de tokens.
+</details>

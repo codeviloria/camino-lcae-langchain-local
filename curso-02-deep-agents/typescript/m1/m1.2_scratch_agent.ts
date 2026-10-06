@@ -20,7 +20,7 @@
 import { createDeepAgent } from "deepagents";
 import { AIMessage } from "langchain"; // 🟢 EXTRA LOCAL: para reconocer los mensajes de la IA
 
-import { model } from "../models.js"; // 🟢 ya apunta a Ollama (ver models.ts → local_model.ts)
+import { model } from "../models.js"; // 🟢 ya apunta a Ollama u OpenRouter (ver models.ts)
 
 // Sin cambios: el lab original funciona tal cual con el modelo local
 const agent = createDeepAgent({ model });

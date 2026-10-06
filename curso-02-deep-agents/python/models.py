@@ -25,7 +25,7 @@ To swap providers:
   4. Set the provider's env vars in `.env` (see notes inline).
 """
 
-import os  # noqa: F401  # used in commented-out model examples below
+import os  # 🟢 se usa en el interruptor de proveedor (MODEL_PROVIDER)
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -36,7 +36,7 @@ from langchain.chat_models import init_chat_model
 
 # ═══ Default Models ══════════════════════════════════════════════════════════
 # 🔸 ORIGINAL DEL CURSO — no se corre en este lab.
-# Motivo: requiere ANTHROPIC_API_KEY (de pago); aquí usamos Ollama local.
+# Motivo: requiere ANTHROPIC_API_KEY (de pago); aquí usamos Ollama local u OpenRouter gratis.
 # Ver el bloque siguiente (🟢 ADAPTADO LOCAL).
 #
 # Workshop default: Anthropic claude-haiku-4-5, fast and cost-effective.
@@ -46,14 +46,40 @@ from langchain.chat_models import init_chat_model
 # #A more capable model for steps that need stronger reasoning
 # strong_model = init_chat_model("anthropic:claude-sonnet-4-6", timeout=120, max_retries=2)
 
-# 🟢 ADAPTADO LOCAL
-# Motivo: mismo contrato (exporta `model` y `strong_model`) pero con Ollama.
-# El import va DESPUÉS de load_dotenv para que OLLAMA_BASE_URL ya esté cargada.
-# Todos los notebooks hacen `from models import model`, así que no hay que tocarlos para eso.
-from local_model import get_model  # noqa: E402
+# 🟢 ADAPTADO LOCAL — mismo estilo del curso: init_chat_model("proveedor:modelo", **parámetros)
+# Motivo: mismo contrato (exporta `model` y `strong_model`), sin API de pago.
+# Los labs hacen `from models import model`: no hay que tocarlos.
+#
+# 🔀 INTERRUPTOR DE PROVEEDOR (M1.3 Models): se elige en el .env, sin tocar código
+#   MODEL_PROVIDER=ollama       → local, gratis, lento en CPU (por defecto)
+#   MODEL_PROVIDER=openrouter   → nube, modelos ":free", rápido, necesita OPENROUTER_API_KEY
+#   OPENROUTER_MODEL=...        → opcional, otro modelo de OpenRouter
+#
+# 📚 Por qué los parámetros de Ollama (sin ellos falla en silencio):
+#   base_url        → Ollama está en otro servidor de la red, no en localhost
+#   num_ctx         → el system prompt del deep agent ocupa varios miles de tokens; con el contexto
+#                     por defecto Ollama lo RECORTA sin avisar y el agente "olvida" sus tools
+#   reasoning=False → qwen3/gemma4 "piensan" por defecto: en CPU son minutos extra
+PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
 
-model = get_model("gemma4:latest")                     # rápido: hace de haiku
-strong_model = get_model("qwen3:8b", num_ctx=32768)    # "pensador": hace de sonnet
+if PROVIDER == "openrouter":
+    # Igual que la opción OpenRouter del curso: API compatible con OpenAI → ChatOpenAI + base_url
+    from langchain_openai import ChatOpenAI
+
+    model = ChatOpenAI(
+        model=os.getenv("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.environ["OPENROUTER_API_KEY"],
+        timeout=120,
+        max_retries=2,
+    )
+    strong_model = model                      # el mismo modelo hace de los dos
+else:
+    OLLAMA = dict(base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"), reasoning=False)
+    model = init_chat_model("ollama:gemma4:latest", num_ctx=16384, **OLLAMA)    # rápido: hace de haiku
+    strong_model = init_chat_model("ollama:qwen3:8b", num_ctx=32768, **OLLAMA)  # "pensador": hace de sonnet
+
+print(f"[models] proveedor={PROVIDER} · model={getattr(model, 'model', None) or getattr(model, 'model_name', None)}")
 
 # ═══ Alternative Models (comment out default above, uncomment one below) ═════
 # model = init_chat_model("anthropic:claude-sonnet-4-6")
@@ -88,6 +114,8 @@ strong_model = get_model("qwen3:8b", num_ctx=32768)    # "pensador": hace de son
 # Free models available; sign up at openrouter.ai and get an API key
 # Requires OPENROUTER_API_KEY in .env
 #
+# 🔸 ORIGINAL DEL CURSO (comentado): ahora se activa con MODEL_PROVIDER=openrouter en el .env
+# (ver el bloque 🟢 de arriba)
 # from langchain_openai import ChatOpenAI
 # model = ChatOpenAI(model="nvidia/nemotron-3-ultra-550b-a55b:free", base_url="https://openrouter.ai/api/v1", api_key=os.environ["OPENROUTER_API_KEY"])
 

@@ -32,8 +32,8 @@ import { config } from "dotenv";
 import { Agent, setGlobalDispatcher } from "undici";
 import { initChatModel } from "langchain";
 
-// 🟢 ADAPTADO LOCAL: helper de Ollama (ver local_model.ts)
-import { getModel } from "./local_model.js";
+// 🟢 ADAPTADO LOCAL: para la opción OpenRouter (API compatible con OpenAI)
+import { ChatOpenAI } from "@langchain/openai";
 
 // Force `.env` to win over any same-named variable already exported by the
 // shell (default dotenv behavior leaves pre-existing shell vars in place,
@@ -49,7 +49,7 @@ setGlobalDispatcher(new Agent({ connections: 64 }));
 
 // ═══ Default Models ══════════════════════════════════════════════════════════
 // 🔸 ORIGINAL DEL CURSO: no se corre en este lab.
-// Motivo: requiere ANTHROPIC_API_KEY (de pago); aquí usamos Ollama local.
+// Motivo: requiere ANTHROPIC_API_KEY (de pago); aquí usamos Ollama local u OpenRouter gratis.
 // Ver el bloque siguiente (🟢 ADAPTADO LOCAL).
 //
 // Workshop default: Anthropic claude-haiku-4-5, fast and cost-effective.
@@ -59,12 +59,46 @@ setGlobalDispatcher(new Agent({ connections: 64 }));
 // // A more capable model for steps that need stronger reasoning
 // export const strongModel = await initChatModel("anthropic:claude-sonnet-4-6", { timeout: 120_000, maxRetries: 2 });
 
-// 🟢 ADAPTADO LOCAL
-// Motivo: mismo contrato que el original (exporta `model` y `strongModel`) pero con Ollama.
-// Todos los labs hacen `import { model } from "../models.js"`, así que no hay que tocarlos.
-// Equivale a python/models.py → get_model("gemma4:latest") / get_model("qwen3:8b", num_ctx=32768).
-export const model = getModel("gemma4:latest");                      // rápido: hace de haiku
-export const strongModel = getModel("qwen3:8b", { numCtx: 32768 });  // "pensador": hace de sonnet
+// 🟢 ADAPTADO LOCAL — mismo estilo del curso: initChatModel("proveedor:modelo", { parámetros })
+// Motivo: mismo contrato (exporta `model` y `strongModel`), sin API de pago.
+// Los labs hacen `import { model } from "../models.js"`: no hay que tocarlos.
+//
+// 🔀 INTERRUPTOR DE PROVEEDOR (M1.3 Models): se elige en el .env, sin tocar código
+//   MODEL_PROVIDER=ollama       → local, gratis, lento en CPU (por defecto)
+//   MODEL_PROVIDER=openrouter   → nube, modelos ":free", rápido, necesita OPENROUTER_API_KEY
+//   OPENROUTER_MODEL=...        → opcional, otro modelo de OpenRouter
+//
+// 📚 Por qué los parámetros de Ollama (sin ellos falla en silencio):
+//   baseUrl      → Ollama está en otro servidor de la red, no en localhost
+//   numCtx       → el system prompt del deep agent ocupa varios miles de tokens; con el contexto
+//                  por defecto Ollama lo RECORTA sin avisar y el agente "olvida" sus tools
+//   think: false → qwen3/gemma4 "piensan" por defecto: en CPU son minutos extra
+// 📚 En TS no se puede declarar `export const model` dos veces (en Python la última línea "gana"):
+//    por eso se decide con un ternario  →  condición ? siEsVerdad : siEsFalso
+const PROVIDER = (process.env.MODEL_PROVIDER ?? "ollama").toLowerCase();
+const OLLAMA = { baseUrl: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434", think: false };
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free";
+
+const openRouter = () =>
+  new ChatOpenAI({
+    model: OPENROUTER_MODEL,
+    apiKey: process.env.OPENROUTER_API_KEY,
+    timeout: 120_000,
+    maxRetries: 2,
+    configuration: { baseURL: "https://openrouter.ai/api/v1" },
+  });
+
+export const model =
+  PROVIDER === "openrouter"
+    ? openRouter()
+    : await initChatModel("ollama:gemma4:latest", { ...OLLAMA, numCtx: 16384 });   // rápido: hace de haiku
+
+export const strongModel =
+  PROVIDER === "openrouter"
+    ? model
+    : await initChatModel("ollama:qwen3:8b", { ...OLLAMA, numCtx: 32768 });        // "pensador": hace de sonnet
+
+console.log(`[models] proveedor=${PROVIDER} · model=${PROVIDER === "openrouter" ? OPENROUTER_MODEL : "gemma4:latest"}`);
 
 // ═══ Alternative Models (comment out default above, uncomment one below) ═════
 // export const model = await initChatModel("anthropic:claude-sonnet-4-6");
@@ -84,6 +118,8 @@ export const strongModel = getModel("qwen3:8b", { numCtx: 32768 });  // "pensado
 // Free models available; sign up at openrouter.ai and get an API key
 // Requires OPENROUTER_API_KEY in .env
 //
+// 🔸 ORIGINAL DEL CURSO (comentado): ahora se activa con MODEL_PROVIDER=openrouter en el .env
+// (ver el bloque 🟢 de arriba)
 // import { ChatOpenAI } from "@langchain/openai";
 // export const model = new ChatOpenAI({
 //   model: "nvidia/nemotron-3-ultra-550b-a55b:free",

@@ -1,11 +1,10 @@
-# Curso 02 · Deep Agents en local (camino LCAE)
+# Deep Agents en local: curso 02 del camino a la certificación LCAE
 
 > **EN:** Fork of LangChain Academy's *Deep Agents* course, adapted to run **locally on CPU with Ollama** (no paid LLM APIs). Python is the main track. Selected labs are also run in **TypeScript** to compare both SDKs. Every lesson is documented: what broke, why, and how it was fixed.
 
 Fork del curso oficial [Deep Agents](https://academy.langchain.com/courses/foundation-introduction-to-deepagents) de LangChain Academy, adaptado para correr con **modelos locales en Ollama, sin GPU y sin APIs de pago**.
 
-- **Repo principal del camino LCAE:** [README](../README.md) (curso 01 completo + progreso general).
-- **Qué hay en esta carpeta:** solo los archivos que adapté (`python/`, `typescript/`) y las notas (`docs/`). El curso completo es de LangChain: [langchain-ai/lca-deepagents](https://github.com/langchain-ai/lca-deepagents).
+- **Curso anterior:** [camino-lcae-langchain-local](https://github.com/codeviloria/camino-lcae-langchain-local), *Introduction to LangChain* completo.
 - **Autor:** Gino. Ingeniero de telecomunicaciones (RAN/RF) en transición a ingeniería de IA y agentes.
 
 ---
@@ -65,9 +64,12 @@ Leyenda: 🐍 Python · 🟦 TypeScript (solo en los labs ⭐) · ✅ hecho · �
 ## 🔧 Qué cambia respecto al curso original
 | Original | En este fork |
 |---|---|
-| `init_chat_model("anthropic:claude-haiku-4-5")` | `get_model("gemma4:latest")` vía [`python/local_model.py`](python/local_model.py) |
-| `init_chat_model("anthropic:claude-sonnet-4-6")` | `get_model("qwen3:8b", num_ctx=32768)` |
-| `ANTHROPIC_API_KEY` | No se necesita |
+| `init_chat_model("anthropic:claude-haiku-4-5")` | `init_chat_model("ollama:gemma4:latest", base_url=…, num_ctx=16384, reasoning=False)` |
+| `init_chat_model("anthropic:claude-sonnet-4-6")` | `init_chat_model("ollama:qwen3:8b", base_url=…, num_ctx=32768, reasoning=False)` |
+| Cambiar de proveedor = editar `models.py` | Interruptor `MODEL_PROVIDER=ollama\|openrouter` en el `.env` (Python y TS) |
+| `ANTHROPIC_API_KEY` | No se necesita (Ollama local u OpenRouter `:free`) |
+
+Por qué esos parámetros: ver [M1.2 → "Por qué los parámetros de Ollama"](docs/M1.2-running-a-deep-agent.md).
 
 Las líneas originales quedan comentadas: **🔸 ORIGINAL DEL CURSO** (con el motivo) → **🟢 ADAPTADO LOCAL** (lo que corre).
 
@@ -78,21 +80,18 @@ Las líneas originales quedan comentadas: **🔸 ORIGINAL DEL CURSO** (con el mo
 - [`docs/plantilla-leccion.md`](docs/plantilla-leccion.md): formato de cada nota.
 
 ## 💼 Logros (se actualiza al cerrar cada módulo)
-- Adaptación del curso a Ollama local en CPU con un solo punto de cambio, en Python (`models.py` → `local_model.py`) y TypeScript (`models.ts` → `local_model.ts`).
-- Primer deep agent en ambos SDKs con medición de latencia en CPU: ~100 s con el modelo cargado; el arranque en frío suma ~35 s.
+- Adaptación del curso a modelos sin costo con un solo punto de cambio (`models.py` / `models.ts`) y un interruptor de proveedor en el `.env`: Ollama local (CPU) ↔ OpenRouter (nube).
+- Primer deep agent en ambos SDKs con latencias medidas: ~100 s en CPU local (el arranque en frío suma ~35 s) vs 14–23 s en la nube.
 
 ## 🚀 Cómo correrlo (Python)
-Clona el curso oficial y copia encima los archivos de esta carpeta (`python/` y `typescript/`):
 ```bash
-git clone https://github.com/langchain-ai/lca-deepagents.git
-cp -r curso-02-deep-agents/python curso-02-deep-agents/typescript lca-deepagents/
-cd lca-deepagents/python
+cd python
 cp .env.example .env
 uv sync
 uv run python -c "from models import model; print(model.invoke('hola').content)"
 ```
 
-En el `.env`, `OLLAMA_BASE_URL=http://<ip-del-servidor>:11434`.
+En el `.env`: `OLLAMA_BASE_URL=http://<ip-del-servidor>:11434` y, para usar la nube, `MODEL_PROVIDER=openrouter` + `OPENROUTER_API_KEY`.
 
 ## 🔒 Privacidad
 El `.env`, `_privado/` y las skills de terceros (`.agents/`, `.claude/`) no se versionan.

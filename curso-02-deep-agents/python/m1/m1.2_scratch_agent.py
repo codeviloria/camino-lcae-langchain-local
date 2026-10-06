@@ -25,7 +25,7 @@ import time  # 🟢 EXTRA LOCAL: medir cuánto tarda en CPU
 
 from deepagents import create_deep_agent
 
-from models import model  # 🟢 ya apunta a Ollama (ver models.py → local_model.py)
+from models import model  # 🟢 ya apunta a Ollama u OpenRouter (ver models.py)
 
 # Sin cambios: el lab original funciona tal cual con el modelo local
 agent = create_deep_agent(model=model)

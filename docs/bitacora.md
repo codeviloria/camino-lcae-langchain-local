@@ -158,3 +158,5 @@ Registro cronológico. Una entrada por sesión de estudio.
 - `uv run langgraph dev` → Studio conectado; grafo `model ↔ HumanInTheLoopMiddleware.after_model → tools/__end__`. Los `wrap_model_call` (dynamic tools/prompt) corren dentro de `model`.
 - **Curso 01 Introduction to LangChain terminado**: módulos 1–3 + bonus, todo con Ollama en CPU, documentado con 🔸/🟢.
 - Próximo: repasar con la hoja de repaso; luego curso 02 (Deep Agents).
+- Agent Chat UI ✅ en `localhost:3000` (tras reconstruir `src/lib/`, excluida por el `lib/` del `.gitignore` de Python). Autenticó y leyó el inbox; a diferencia del notebook, preguntó antes de revisar (prompt del `.py` más corto).
+- **Curso 01 cerrado al 100 %.** Siguiente: curso 02 Deep Agents.

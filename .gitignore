@@ -218,3 +218,6 @@ uv.lock.bak
 
 # respaldo local de los notebooks sin sanitizar (NUNCA publicar)
 _privado/
+
+# Agent Chat UI (módulo 3): la regla 'lib/' de Python ocultaba src/lib de la UI
+!notebooks/module-3/agent-chat-ui/src/lib/

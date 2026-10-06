@@ -148,16 +148,21 @@ El registro cronológico está en la [bitácora](docs/bitacora.md).
 | El ruteo de modelos no se ve como un paso | `wrap_model_call` mandó 1 mensaje a gemma4 y 11 a qwen3:8b (32K); la elección solo aparece en `model_name` / `ls_model_name` del trace → loguear el motivo | [M3.4](docs/module-3/M3.4-dynamic.md) |
 | 🚨 Ocultar una tool no es bloquearla | Con `override(tools=[web_search])`, el rol `external` igual ejecutó `sql_query` (el modelo la nombró porque aparecía en el prompt). Corregido con un guardia `@wrap_tool_call` (lista blanca por rol): bloqueó a `external` incluso cuando el usuario pidió la tool por nombre y cuando gemma4 inventó `database_query` | [M3.4](docs/module-3/M3.4-dynamic.md) |
 | En Studio, el middleware `wrap_model_call` no es un nodo | El grafo del Email Agent muestra `model` y `HumanInTheLoopMiddleware.after_model`; dynamic tools/prompt corren **dentro** de `model` | [M3.5](docs/module-3/M3.5-email-agent.md) |
+| La UI del curso no compilaba | Faltaba `agent-chat-ui/src/lib/`: el `.gitignore` de Python (`lib/`) la excluía del repo del curso. Reconstruida desde el repo oficial (commit `d93ba24`) + `app-config.ts` propio de la Academy | [M3.5](docs/module-3/M3.5-email-agent.md) |
 
 **Evidencia: el Email Agent del módulo 3 (auth + dynamic tools + HITL) en LangGraph Studio con gemma4 local**
 
 ![Email Agent en LangGraph Studio](docs/img/M3.5-studio-email-agent.png)
 
+**…y en Agent Chat UI (Next.js) conectada al mismo servidor local**
+
+![Agent Chat UI](docs/img/M3.5-agent-chat-ui.png)
+
 **Evidencia: el agente del módulo 1 corriendo en LangGraph Studio con gemma4 local**
 
 ![Personal Chef en LangGraph Studio](docs/img/M1.7-studio-personal-chef.png)
 
-Servidores MCP usados y lo que exponen: [docs/mcp-catalog.md](docs/mcp-catalog.md) · Todas las reglas consolidadas: [docs/lecciones-aprendidas.md](docs/lecciones-aprendidas.md) · Observabilidad: [docs/langsmith-tracing-monitor.md](docs/langsmith-tracing-monitor.md)
+Agent Chat UI, cómo conecta y cómo llevarla a producción: [docs/agent-chat-ui-produccion.md](docs/agent-chat-ui-produccion.md) · Servidores MCP usados y lo que exponen: [docs/mcp-catalog.md](docs/mcp-catalog.md) · Todas las reglas consolidadas: [docs/lecciones-aprendidas.md](docs/lecciones-aprendidas.md) · Observabilidad: [docs/langsmith-tracing-monitor.md](docs/langsmith-tracing-monitor.md)
 
 ## 🔧 Qué cambia respecto al curso original
 

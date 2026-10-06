@@ -113,11 +113,57 @@ Detalle completo en [docs/setup-lab-local.md](docs/setup-lab-local.md).
 | | M3.4 Dynamic models / prompts / tools | ✅ models · prompts · tools (+ hallazgo de seguridad) | [nota](docs/module-3/M3.4-dynamic.md) |
 | | M3.5 Email Agent (proyecto: auth + dynamic tools/prompt + HITL, servido en Studio) | ✅ | [nota](docs/module-3/M3.5-email-agent.md) |
 | | 🏁 **Curso 01 completado** (módulos 1–3 + bonus, 100 % local) | ✅ | [repaso](docs/repaso-stack-flow.md) |
-| 02 · Introduction to Deep Agents | | ⬜ | |
+| **02 · Introduction to Deep Agents** | 2/25 lecciones (Python + TypeScript en los labs ⭐) | 🟨 | [checklist](#-curso-02--deep-agents-en-curso) · [carpeta](curso-02-deep-agents/) |
 | 03 · Building Reliable Agents (Test) | | ⬜ | |
 | 04 · Monitoring Production Agents | | ⬜ | |
 | 05 · LangSmith Deployment | | ⬜ | |
 | 06 · LCAE Practice Exam → **Examen** | | ⬜ | |
+
+### 🗺️ Curso 02 · Deep Agents (en curso)
+Código adaptado y notas en [`curso-02-deep-agents/`](curso-02-deep-agents/) (Python y TypeScript con Ollama local).
+
+**Módulo 0 · Setup**
+
+- [x] **M0.1** Setup (Ollama local) — 🐍 ✅ · [nota](curso-02-deep-agents/docs/M0.1-setup-local.md)
+
+**Módulo 1 · Fundamentos del deep agent**
+
+- [ ] **M1.1** Overview — 🐍 ⬜
+- [x] **M1.2** ⭐ Running a deep agent — 🐍 ✅ · 🟦 TS ✅ · [nota](curso-02-deep-agents/docs/M1.2-running-a-deep-agent.md)
+- [ ] **M1.3** Models — 🐍 ⬜
+- [ ] **M1.4** System prompt — 🐍 ⬜
+- [ ] **M1.5** ⭐ Tools — 🐍 ⬜ · 🟦 TS ⬜
+- [ ] **M1.6** MCP — 🐍 ⬜
+- [ ] **M1.7** ⭐ Messages, threads y checkpointers — 🐍 ⬜ · 🟦 TS ⬜
+- [ ] **M1.8** ⭐ Human-in-the-loop — 🐍 ⬜ · 🟦 TS ⬜
+- [ ] **M1.9** Práctica — 🐍 ⬜
+
+**Módulo 2 · Entorno: filesystem, sandboxes, interpreter**
+
+- [ ] **M2.1** El entorno del deep agent — 🐍 ⬜
+- [ ] **M2.2** Filesystem backends — 🐍 ⬜
+- [ ] **M2.3** Sandboxes y LocalShell — 🐍 ⬜
+- [ ] **M2.4** Interpreter — 🐍 ⬜
+
+**Módulo 3 · Contexto: summarization, skills, memoria**
+
+- [ ] **M3.1** Summarization y context offloading — 🐍 ⬜
+- [ ] **M3.2** Skills — 🐍 ⬜
+- [ ] **M3.3** Memory — 🐍 ⬜
+
+**Módulo 4 · Subagentes**
+
+- [ ] **M4.1** ⭐ Delegation — 🐍 ⬜ · 🟦 TS ⬜
+- [ ] **M4.2** Equipo de subagentes — 🐍 ⬜
+- [ ] **M4.3** Subagentes dinámicos — 🐍 ⬜
+
+**Módulo 5 · Proyecto y despliegue**
+
+- [ ] **M5.1** Putting it all together — 🐍 ⬜
+- [ ] **M5.2** Despliegue local — 🐍 ⬜
+- [ ] **M5.3** ⭐ Sales assistant (capstone) — 🐍 ⬜ · 🟦 TS ⬜
+- [ ] **M5.4** Subagentes asíncronos — 🐍 ⬜
+- [ ] **M5.5** Agente asíncrono con sandbox — 🐍 ⬜
 
 El registro cronológico está en la [bitácora](docs/bitacora.md).
 

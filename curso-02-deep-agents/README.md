@@ -14,7 +14,7 @@ Fork del curso oficial [Deep Agents](https://academy.langchain.com/courses/found
 - Usar **Python** como camino principal y **TypeScript** como contraste en los labs clave ⭐.
 - Documentar cada problema con el formato *problema → causa → solución → regla*.
 
-## 📈 Progreso: 2/25 lecciones
+## 📈 Progreso: 10/25 lecciones
 
 Leyenda: 🐍 Python · 🟦 TypeScript (solo en los labs ⭐) · ✅ hecho · ⬜ pendiente
 
@@ -24,15 +24,16 @@ Leyenda: 🐍 Python · 🟦 TypeScript (solo en los labs ⭐) · ✅ hecho · �
 
 **Módulo 1 · Fundamentos del deep agent**
 
-- [ ] **M1.1** Overview — 🐍 ⬜
+- [x] **M1.1** Overview — 🐍 ✅ · [nota](docs/M1.1-overview.md)
 - [x] **M1.2** ⭐ Running a deep agent — 🐍 ✅ · 🟦 TS ✅ · [nota](docs/M1.2-running-a-deep-agent.md)
-- [ ] **M1.3** Models — 🐍 ⬜
-- [ ] **M1.4** System prompt — 🐍 ⬜
-- [ ] **M1.5** ⭐ Tools — 🐍 ⬜ · 🟦 TS ⬜
-- [ ] **M1.6** MCP — 🐍 ⬜
-- [ ] **M1.7** ⭐ Messages, threads y checkpointers — 🐍 ⬜ · 🟦 TS ⬜
-- [ ] **M1.8** ⭐ Human-in-the-loop — 🐍 ⬜ · 🟦 TS ⬜
-- [ ] **M1.9** Práctica — 🐍 ⬜
+- [x] **M1.3** Models — 🐍 ✅ · [nota](docs/M1.3-models.md)
+- [x] **M1.4** System prompt — 🐍 ✅ · [nota](docs/M1.4-system-prompt.md)
+- [x] **M1.5** ⭐ Tools — 🐍 ✅ · 🟦 TS ⬜ · [nota](docs/M1.5-tools.md)
+- [x] **M1.6** MCP — 🐍 ✅ · [nota](docs/M1.6-mcp.md)
+- [x] **M1.7** ⭐ Messages, threads y checkpointers — 🐍 ✅ · 🟦 TS ⬜ · [nota](docs/M1.7-messages-threads-checkpointers.md)
+- [x] **M1.8** ⭐ Human-in-the-loop — 🐍 ✅ · 🟦 TS ⬜ · [nota](docs/M1.8-hitl.md)
+- [x] **M1.9** Práctica — 🐍 ✅ · [nota](docs/M1.9-practica.md)
+- 📝 **Resumen M1** para el examen: [docs/M1-resumen.md](docs/M1-resumen.md) · 📓 [notebook de práctica](python/notebooks/m1-practica.ipynb)
 
 **Módulo 2 · Entorno: filesystem, sandboxes, interpreter**
 

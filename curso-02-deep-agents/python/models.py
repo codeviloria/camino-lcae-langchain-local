@@ -62,22 +62,33 @@ from langchain.chat_models import init_chat_model
 #   reasoning=False → qwen3/gemma4 "piensan" por defecto: en CPU son minutos extra
 PROVIDER = os.getenv("MODEL_PROVIDER", "ollama").lower()
 
-if PROVIDER == "openrouter":
-    # Igual que la opción OpenRouter del curso: API compatible con OpenAI → ChatOpenAI + base_url
-    from langchain_openai import ChatOpenAI
 
-    model = ChatOpenAI(
-        model=os.getenv("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free"),
-        base_url="https://openrouter.ai/api/v1",
-        api_key=os.environ["OPENROUTER_API_KEY"],
-        timeout=120,
-        max_retries=2,
+def build(provider: str = PROVIDER):
+    """Devuelve (model, strong_model) para un proveedor: "ollama" u "openrouter".
+
+    🟢 EXTRA LOCAL: permite que un notebook use otro proveedor que el .env,
+    p. ej. `model, strong_model = build("ollama")` para explorar sin gastar el límite de OpenRouter.
+    """
+    if provider == "openrouter":
+        # Igual que la opción OpenRouter del curso: API compatible con OpenAI → ChatOpenAI + base_url
+        from langchain_openai import ChatOpenAI
+
+        m = ChatOpenAI(
+            model=os.getenv("OPENROUTER_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.environ["OPENROUTER_API_KEY"],
+            timeout=120,
+            max_retries=2,
+        )
+        return m, m                           # el mismo modelo hace de los dos
+    ollama = dict(base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"), reasoning=False)
+    return (
+        init_chat_model("ollama:gemma4:latest", num_ctx=16384, **ollama),   # rápido: hace de haiku
+        init_chat_model("ollama:qwen3:8b", num_ctx=32768, **ollama),        # "pensador": hace de sonnet
     )
-    strong_model = model                      # el mismo modelo hace de los dos
-else:
-    OLLAMA = dict(base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"), reasoning=False)
-    model = init_chat_model("ollama:gemma4:latest", num_ctx=16384, **OLLAMA)    # rápido: hace de haiku
-    strong_model = init_chat_model("ollama:qwen3:8b", num_ctx=32768, **OLLAMA)  # "pensador": hace de sonnet
+
+
+model, strong_model = build(PROVIDER)
 
 print(f"[models] proveedor={PROVIDER} · model={getattr(model, 'model', None) or getattr(model, 'model_name', None)}")
 

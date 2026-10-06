@@ -59,6 +59,23 @@ agent.invoke({"messages": [...], <campos extra del state>}, config={"configurabl
 
 HITL: decisiones `approve`, `edit`, `reject`, `respond`; **requiere checkpointer**; se reanuda con `Command(resume={"decisions": [...]})` en el **mismo `thread_id`**; cada decisión **consume** la pausa.
 
+## 5b. Las 3 formas de controlar un agente (lámina del curso, en castellano)
+![Las 3 formas de controlar un agente](img/M3-tres-formas-de-controlar-un-agente.png)
+
+| | **Middleware tipo wrap** | **Middleware tipo nodo** | **Tool calls** |
+|---|---|---|---|
+| Recibe | `ModelRequest` | `state` + `runtime` | `ToolRuntime` |
+| Para qué | Ajustar **tools, prompt o modelo** del agente mientras corre | Ajustar el **state** del agente mientras corre | Que el **agente mismo** ajuste su state u obtenga el runtime context |
+| Ejemplo del curso | Dar acceso a tools si el usuario es interno | Recortar mensajes de conversaciones largas | Guardar en el state el nombre de usuario cuando lo da |
+| Decoradores | `@wrap_model_call`, `@dynamic_prompt`, `@wrap_tool_call` | `@before_agent`, `@before_model`, `@after_model`, `@after_agent` | `@tool` con `runtime: ToolRuntime`, `Command(update=...)` |
+| Quién decide | El **código** (middleware), en cada llamada | El **código**, en momentos fijos del ciclo | El **modelo** decide llamar la tool; el código de la tool hace el cambio |
+| En Studio | Corre **dentro** del nodo `model` (no se ve como nodo) | Aparece **como nodo** (p. ej. `HumanInTheLoopMiddleware.after_model`) | Nodo `tools` |
+| En mi lab | M3.4 dynamic models/prompts/tools, guardia de permisos, M3.5 tools según auth | M3.2 trim (`before_agent`) y resumen (`before_model`), M3.3 HITL (`after_model`) | M2.2a `runtime.context`, M2.2b `Command(update=...)`, M3.5 `authenticate` |
+
+**Mnemotecnia:** **wrap = camerino** (cambia actor, guion o utilería antes de cada escena) · **nodo = parada fija** (entra, piensa, revisa, sale) · **tool = el actor actúa** (el modelo decide usarla y la tool cambia el state).
+
+**Pregunta tipo examen:** *"Quiero darle más tools a un usuario interno"* → wrap. *"Quiero borrar mensajes viejos"* → nodo. *"Quiero que el agente guarde el nombre del usuario cuando se lo diga"* → tool con `Command(update=...)`.
+
 ## 6. Multi-agente y RAG en una línea
 - **Subagents as tools:** el coordinador solo ve la docstring y el `return` del subagente (aislamiento de contexto). Los datos obligatorios deben llegar por el **state** (Wedding Planner).
 - **RAG:** loader → splitter (caracteres) → embeddings → vector store (`InMemory` = RAM) → tool de búsqueda.
